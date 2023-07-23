@@ -1,0 +1,8 @@
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+eclipse.project.name = appName + '-core'
+
+dependencies {
+  api "com.badlogicgames.gdx:gdx:$gdxVersion"
+  api "org.scala-lang:scala-library:$scalaVersion"
+  implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+}
