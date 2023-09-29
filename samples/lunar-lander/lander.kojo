@@ -49,7 +49,7 @@ class LanderGame extends GdxGame {
 
 class MenuScreen(game: GdxGame) extends GdxScreen {
     def initialize(): Unit = {
-        val title = new GameEntity(0, 0, entityStage) {
+        val title = new GameEntity(0, 0) {
             val renderer = new SpriteRenderer(this, "lunar-lander.png")
         }
 
@@ -90,13 +90,17 @@ class LanderScreen(game: GdxGame) extends GdxScreen {
     def initialize(): Unit = {
         WorldBounds.set(Gdx.graphics.getWidth, Gdx.graphics.getHeight)
 
-        val space = new GameEntity(0, 0, entityStage) {
+        val space = new GameEntity(0, 0) {
             val renderer = new SpriteRenderer(this, "space.png")
             setSize(WorldBounds.width, WorldBounds.height)
         }
+        entityStage.addActor(space)
 
-        moon = new Moon(0, 0, entityStage, space)
-        spaceShip = new SpaceShip(WorldBounds.width / 2, WorldBounds.height * 4 / 5, entityStage)
+        moon = new Moon(0, 0, space)
+        entityStage.addActor(moon)
+        
+        spaceShip = new SpaceShip(WorldBounds.width / 2, WorldBounds.height * 4 / 5)
+        entityStage.addActor(spaceShip)
 
         fpsLabel = new Label("FPS:", game.smallLabelStyle)
         velocityLabel = new Label("Velocity:", game.smallLabelStyle)
@@ -108,16 +112,21 @@ class LanderScreen(game: GdxGame) extends GdxScreen {
             .padBottom(WorldBounds.height * 0.9f)
     }
 
+    val shipCollider = spaceShip.getComponent[Collider]
+    val moonCollider = moon.getComponent[Collider]
+    val shipPhysics = spaceShip.getComponent[PhysicsBehavior]
+
     def update(dt: Float): Unit = {
         if (!gameOver) {
             fpsLabel.setText(s"FPS: ${Gdx.graphics.getFramesPerSecond}")
             if (Gdx.graphics.getFrameId % 10 == 0) {
-                velocityLabel.setText(s"Velocity: ${spaceShip.physics.velocity.y.toInt}")
+                velocityLabel.setText(s"Velocity: ${shipPhysics.velocity.y.toInt}")
             }
 
-            if (spaceShip.collider.collidesWith(moon.collider)) {
-                if (spaceShip.physics.speed > 60) {
-                    val explosion = new Explosion(0, 0, entityStage)
+            if (shipCollider.collidesWith(moonCollider)) {
+                if (shipPhysics.speed > 60) {
+                    val explosion = new Explosion(0, 0)
+                    entityStage.addActor(explosion)
                     explosion.positioner.centerAtActor(spaceShip)
                     explosion.moveBy(0, -5)
                     explosion.scaleBy(0.1f)
@@ -143,12 +152,12 @@ class LanderScreen(game: GdxGame) extends GdxScreen {
     }
 }
 
-class SpaceShip(x: Float, y: Float, s: Stage) extends GameEntity(x, y, s) {
+class SpaceShip(x: Float, y: Float) extends GameEntity(x, y) {
     val renderer = new SpriteRenderer(this, "spaceship.png")
 
     private var active = true
-    val collider = new Collider(this)
-    val physics = new PhysicsBehavior(this)
+    private val collider = new Collider(this)
+    private val physics = new PhysicsBehavior(this)
     collider.setBoundaryPolygon(8)
     physics.setMaxSpeed(500)
     physics.setFrictionMagnitude(10)
@@ -159,7 +168,7 @@ class SpaceShip(x: Float, y: Float, s: Stage) extends GameEntity(x, y, s) {
         if (Constants.usePE)
             new ParticleEffectRenderer("thruster.pfx", "")
         else
-            new GameEntity(0, 0, s) {
+            new GameEntity(0, 0) {
                 val renderer = new SpriteRenderer(this, "thruster.png")
             }
 
@@ -194,16 +203,16 @@ class SpaceShip(x: Float, y: Float, s: Stage) extends GameEntity(x, y, s) {
     }
 }
 
-class Moon(x: Float, y: Float, s: Stage, bg: GameEntity) extends GameEntity(x, y, s) {
+class Moon(x: Float, y: Float, bg: GameEntity) extends GameEntity(x, y) {
     val renderer = new SpriteRenderer(this, "moon.png")
-    val collider = new Collider(this)
+    private val collider = new Collider(this)
     collider.setBoundaryPolygon(8)
-    val positioner = new PositioningCapability(this)
+    private val positioner = new PositioningCapability(this)
     positioner.centerAtActor(bg)
     moveBy(0, -(bg.getHeight / 2 - 0))
 }
 
-class Explosion(x: Float, y: Float, s: Stage) extends GameEntity(x, y, s) {
+class Explosion(x: Float, y: Float) extends GameEntity(x, y) {
     val renderer = new AnimatedSpriteRenderer(this)
     renderer.loadAnimationFromSheet("explosion.png", 5, 5, 0.03f, false)
     val positioner = new PositioningCapability(this)

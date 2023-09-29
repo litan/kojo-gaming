@@ -14,7 +14,9 @@
  */
 package net.kogics.kojo.gaming
 
+import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
+import scala.reflect.ClassTag
 
 import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode
@@ -214,6 +216,7 @@ class ParticleEffectRenderer(effectFile: String, imagesDir: String) extends Grou
 // Behavior Components
 
 class PhysicsBehavior(ge: GameEntity) extends Behavior {
+  ge.addComponent(this)
   private val currVelocity = new Vector2(0, 0)
   private val accumulatedAcceleration = new Vector2(0, 0)
   private var maxSpeed = 1000f
@@ -280,6 +283,7 @@ class PhysicsBehavior(ge: GameEntity) extends Behavior {
 // Capability Components
 
 class Collider(ge: GameEntity) {
+  ge.addComponent(this)
   private var bPoly: Polygon = _
   setBoundaryRectangle()
 
@@ -381,7 +385,9 @@ object WorldBounds {
 }
 
 class WorldBoundsCapability(ge: GameEntity) {
+  ge.addComponent(this)
   import WorldBounds.boundsRect
+  val pc = ge.getComponent[PhysicsBehavior]
 
   def wrapAround(): Unit = {
     if (ge.getX + ge.getWidth < 0) {
@@ -408,20 +414,15 @@ class WorldBoundsCapability(ge: GameEntity) {
 
   def bounceOff(): Unit = {
     import ge._
-    val phys = ge.physicsCapability
 
     def flipXVel(): Unit = {
-      phys.foreach { pc =>
-        val vel = pc.velocity
-        pc.setVelocity(-vel.x, vel.y)
-      }
+      val vel = pc.velocity
+      pc.setVelocity(-vel.x, vel.y)
     }
 
     def flipYVel(): Unit = {
-      phys.foreach { pc =>
-        val vel = pc.velocity
-        pc.setVelocity(vel.x, -vel.y)
-      }
+      val vel = pc.velocity
+      pc.setVelocity(vel.x, -vel.y)
     }
 
     if (getX < 0) {
@@ -445,6 +446,7 @@ class WorldBoundsCapability(ge: GameEntity) {
 }
 
 class PositioningCapability(ge: GameEntity) {
+  ge.addComponent(this)
   import WorldBounds.boundsRect
 
   def centerAtPosition(x: Float, y: Float): Unit = {
@@ -470,10 +472,22 @@ class PositioningCapability(ge: GameEntity) {
 
 // The core game entity
 
-abstract class GameEntity(x: Float, y: Float, s: Stage) extends Group {
-  def renderer: Renderer
+abstract class GameEntity(x: Float, y: Float) extends Group {
+  protected def renderer: Renderer
+
+  private var components = new mutable.HashMap[String, Any]
+
+  def addComponent[C: ClassTag](c: C): Unit = {
+    val cls = implicitly[ClassTag[C]].runtimeClass
+    components.put(cls.getName, c)
+  }
+
+  def getComponent[C: ClassTag]: C = {
+    val cls = implicitly[ClassTag[C]].runtimeClass
+    components(cls.getName).asInstanceOf[C]
+  }
+
   setPosition(x, y)
-  s.addActor(this)
 
   def setOpacity(opacity: Float): Unit = {
     this.getColor.a = opacity
@@ -492,6 +506,4 @@ abstract class GameEntity(x: Float, y: Float, s: Stage) extends Group {
     }
     super.draw(batch, parentAlpha)
   }
-
-  def physicsCapability: Option[PhysicsBehavior] = None
 }

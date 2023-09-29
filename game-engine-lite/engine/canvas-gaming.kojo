@@ -1,6 +1,6 @@
 // A simple game engine that uses the Kojo Drawing Canvas
 // This is meant to be very similar to the Kojo game engine for libGDX
-// The idea with this is to provide 
+// The idea with this is to provide
 // a smooth path from gaming within Kojo to libGDX based gaming
 
 case class Point(x: Float, y: Float)
@@ -194,7 +194,7 @@ abstract class GameEntity(x0: Float, y0: Float) {
     private var color = noColor
     private var components = new HashMap[String, Any]
     import scala.reflect.ClassTag
-    def addComponent[C: ClassTag](c: C) {
+    def addComponent[C: ClassTag](c: C): Unit = {
         val cls = implicitly[ClassTag[C]].runtimeClass
         components.put(cls.getName, c)
     }
@@ -206,7 +206,7 @@ abstract class GameEntity(x0: Float, y0: Float) {
     protected def renderer: Renderer
 
     def position: Point = Point(x, y)
-    def setPosition(nx: Float, ny: Float) {
+    def setPosition(nx: Float, ny: Float): Unit = {
         x = nx
         y = ny
     }
@@ -215,13 +215,13 @@ abstract class GameEntity(x0: Float, y0: Float) {
     def getWidth: Float = width
     def getHeight: Float = height
 
-    def setX(nx: Float) {
+    def setX(nx: Float): Unit = {
         x = nx
     }
-    def setY(ny: Float) {
+    def setY(ny: Float): Unit = {
         y = ny
     }
-    def setSize(w: Float, h: Float) {
+    def setSize(w: Float, h: Float): Unit = {
         width = w
         height = h
     }
@@ -232,7 +232,7 @@ abstract class GameEntity(x0: Float, y0: Float) {
         }
     }
 
-    def draw(canvas: CanvasDraw) {
+    def draw(canvas: CanvasDraw): Unit = {
         if (visible) {
             canvas.pushMatrix()
             canvas.translate(x, y)
@@ -246,28 +246,28 @@ abstract class GameEntity(x0: Float, y0: Float) {
         }
     }
 
-    def moveBy(dx: Float, dy: Float) {
+    def moveBy(dx: Float, dy: Float): Unit = {
         x += dx
         y += dy
     }
-    def moveBy(vec: Vector2) {
+    def moveBy(vec: Vector2): Unit = {
         moveBy(vec.x, vec.y)
     }
-    def addChild(c: GameEntity) {
+    def addChild(c: GameEntity): Unit = {
         if (c.parent != null) {
             parent.removeChild(c)
         }
         children.append(c)
     }
-    def removeChild(c: GameEntity) {
+    def removeChild(c: GameEntity): Unit = {
         children -= c
     }
     def isVisible = visible
-    def setVisible(v: Boolean) {
+    def setVisible(v: Boolean): Unit = {
         visible = v
     }
     def getColor = color
-    def setColor(c: Color) {
+    def setColor(c: Color): Unit = {
         color = c
     }
 }
