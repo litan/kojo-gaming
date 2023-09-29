@@ -93,21 +93,21 @@ trait Renderer extends Behavior {
   def draw(batch: Batch, parentAlpha: Float): Unit
 }
 
-class SpriteRenderer(go: GameEntity, fileName: String) extends Renderer {
+class SpriteRenderer(ge: GameEntity, fileName: String) extends Renderer {
   private val textureRegion: TextureRegion = TextureUtils.loadTexture(fileName)
   init()
 
   private def init(): Unit = {
     val w = textureRegion.getRegionWidth.toFloat
     val h = textureRegion.getRegionHeight.toFloat
-    go.setSize(w, h)
-    go.setOrigin(w / 2, h / 2)
+    ge.setSize(w, h)
+    ge.setOrigin(w / 2, h / 2)
   }
 
   def timeStep(dt: Float): Unit = {}
 
   def draw(batch: Batch, parentAlpha: Float): Unit = {
-    import go._
+    import ge._
     batch.draw(
       textureRegion,
       getX,
@@ -123,7 +123,7 @@ class SpriteRenderer(go: GameEntity, fileName: String) extends Renderer {
   }
 }
 
-class AnimatedSpriteRenderer(go: GameEntity) extends Renderer {
+class AnimatedSpriteRenderer(ge: GameEntity) extends Renderer {
   private var animation: Animation[TextureRegion] = _
   private var elapsedTime = 0f
 
@@ -148,8 +148,8 @@ class AnimatedSpriteRenderer(go: GameEntity) extends Renderer {
     val tr = animation.getKeyFrame(0)
     val w = tr.getRegionWidth.toFloat
     val h = tr.getRegionHeight.toFloat
-    go.setSize(w, h)
-    go.setOrigin(w / 2, h / 2)
+    ge.setSize(w, h)
+    ge.setOrigin(w / 2, h / 2)
   }
 
   private def currentFrame: TextureRegion = {
@@ -161,7 +161,7 @@ class AnimatedSpriteRenderer(go: GameEntity) extends Renderer {
   }
 
   def draw(batch: Batch, parentAlpha: Float): Unit = {
-    import go._
+    import ge._
     if (inited) {
       batch.draw(
         currentFrame,
@@ -213,7 +213,7 @@ class ParticleEffectRenderer(effectFile: String, imagesDir: String) extends Grou
 
 // Behavior Components
 
-class PhysicsBehavior(go: GameEntity) extends Behavior {
+class PhysicsBehavior(ge: GameEntity) extends Behavior {
   private val currVelocity = new Vector2(0, 0)
   private val accumulatedAcceleration = new Vector2(0, 0)
   private var maxSpeed = 1000f
@@ -257,7 +257,7 @@ class PhysicsBehavior(go: GameEntity) extends Behavior {
   }
 
   def addAcceleration(magnitude: Float): Unit = {
-    addAcceleration(magnitude, go.getRotation)
+    addAcceleration(magnitude, ge.getRotation)
   }
 
   def timeStep(dt: Float): Unit = {
@@ -268,7 +268,7 @@ class PhysicsBehavior(go: GameEntity) extends Behavior {
     }
     currSpeed = MathUtils.clamp(currSpeed, 0, maxSpeed)
     setVelocityMagnitude(currSpeed)
-    go.moveBy(currVelocity.x * dt, currVelocity.y * dt)
+    ge.moveBy(currVelocity.x * dt, currVelocity.y * dt)
     accumulatedAcceleration.set(0, 0)
   }
 
@@ -279,20 +279,20 @@ class PhysicsBehavior(go: GameEntity) extends Behavior {
 
 // Capability Components
 
-class Collider(go: GameEntity) {
+class Collider(ge: GameEntity) {
   private var bPoly: Polygon = _
   setBoundaryRectangle()
 
   def setBoundaryRectangle(): Unit = {
-    val w = go.getWidth
-    val h = go.getHeight
+    val w = ge.getWidth
+    val h = ge.getHeight
     val vertices = scala.Array(0, 0, w, 0, w, h, 0, h)
     setBoundaryPolygon(vertices)
   }
 
   def setBoundaryPolygon(numSides: Int): Unit = {
-    val w = go.getWidth
-    val h = go.getHeight
+    val w = ge.getWidth
+    val h = ge.getHeight
     val vertices = ArrayBuffer.empty[Float]
     val twoPi = 2 * 3.14f
     for (i <- 0 until numSides) {
@@ -308,7 +308,7 @@ class Collider(go: GameEntity) {
   }
 
   def boundaryPolygon: Polygon = {
-    import go._
+    import ge._
     bPoly.setPosition(getX, getY)
     bPoly.setOrigin(getOriginX, getOriginY)
     bPoly.setRotation(getRotation)
@@ -334,7 +334,7 @@ class Collider(go: GameEntity) {
       val mtv = new Intersector.MinimumTranslationVector
       val polygonOverlap = Intersector.overlapConvexPolygons(poly1, poly2, mtv)
       if (polygonOverlap) {
-        go.moveBy(mtv.normal.x * mtv.depth, mtv.normal.y * mtv.depth)
+        ge.moveBy(mtv.normal.x * mtv.depth, mtv.normal.y * mtv.depth)
         Some(mtv.normal)
       }
       else {
@@ -347,7 +347,7 @@ class Collider(go: GameEntity) {
   }
 
   def isCloser(other: Collider, distance: Float): Boolean = {
-    import go._
+    import ge._
     val poly1 = boundaryPolygon
     val scaleX = (getWidth + 2 * distance) / getWidth
     val scaleY = (getHeight + 2 * distance) / getHeight
@@ -372,34 +372,34 @@ object WorldBounds {
     boundsRect = new Rectangle(0, 0, width.toFloat, height.toFloat)
   }
 
-  def set(go: GameEntity): Unit = {
-    set(go.getWidth, go.getHeight)
+  def set(ge: GameEntity): Unit = {
+    set(ge.getWidth, ge.getHeight)
   }
 
   def width: Float = boundsRect.width
   def height: Float = boundsRect.height
 }
 
-class WorldBoundsCapability(go: GameEntity) {
+class WorldBoundsCapability(ge: GameEntity) {
   import WorldBounds.boundsRect
 
   def wrapAround(): Unit = {
-    if (go.getX + go.getWidth < 0) {
-      go.setX(boundsRect.width)
+    if (ge.getX + ge.getWidth < 0) {
+      ge.setX(boundsRect.width)
     }
-    if (go.getX > boundsRect.width) {
-      go.setX(-go.getWidth)
+    if (ge.getX > boundsRect.width) {
+      ge.setX(-ge.getWidth)
     }
-    if (go.getY + go.getHeight < 0) {
-      go.setY(boundsRect.height)
+    if (ge.getY + ge.getHeight < 0) {
+      ge.setY(boundsRect.height)
     }
-    if (go.getY > boundsRect.height) {
-      go.setY(-go.getHeight)
+    if (ge.getY > boundsRect.height) {
+      ge.setY(-ge.getHeight)
     }
   }
 
   def keepWithin(): Unit = {
-    import go._
+    import ge._
     if (getX < 0) setX(0)
     if (getX + getWidth > boundsRect.width) setX(boundsRect.width - getWidth)
     if (getY < 0) setY(0)
@@ -407,8 +407,8 @@ class WorldBoundsCapability(go: GameEntity) {
   }
 
   def bounceOff(): Unit = {
-    import go._
-    val phys = go.physicsCapability
+    import ge._
+    val phys = ge.physicsCapability
 
     def flipXVel(): Unit = {
       phys.foreach { pc =>
@@ -444,11 +444,11 @@ class WorldBoundsCapability(go: GameEntity) {
   }
 }
 
-class PositioningCapability(go: GameEntity) {
+class PositioningCapability(ge: GameEntity) {
   import WorldBounds.boundsRect
 
   def centerAtPosition(x: Float, y: Float): Unit = {
-    go.setPosition(x - go.getWidth / 2, y - go.getHeight / 2)
+    ge.setPosition(x - ge.getWidth / 2, y - ge.getHeight / 2)
   }
 
   def centerAtActor(other: GameEntity): Unit = {
@@ -456,7 +456,7 @@ class PositioningCapability(go: GameEntity) {
   }
 
   def alignCamera(): Unit = {
-    import go._
+    import ge._
     val cam = getStage.getCamera
     val v = getStage.getViewport
     // center camera on actor
