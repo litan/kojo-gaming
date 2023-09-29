@@ -48,17 +48,11 @@ class BabySteps extends GdxGame {
 }
 
 class PlayScreen extends GdxScreen {
-    var player: Player = _
+    WorldBounds.set(Gdx.graphics.getWidth, Gdx.graphics.getHeight)
+    val player = new Player(WorldBounds.width / 2 - 25, WorldBounds.height / 2 - 25)
+    entityStage.addActor(player)
 
-    def initialize(): Unit = {
-        WorldBounds.set(Gdx.graphics.getWidth, Gdx.graphics.getHeight)
-
-        player = new Player(WorldBounds.width / 2 - 25, WorldBounds.height / 2 - 25)
-        entityStage.addActor(player)
-    }
-
-    def update(dt: Float): Unit = {
-    }
+    def update(dt: Float): Unit = {}
 }
 
 class Player(x: Float, y: Float) extends GameEntity(x, y) {

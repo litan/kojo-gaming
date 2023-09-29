@@ -42,85 +42,82 @@ class SpaceMission extends GdxGame {
 }
 
 class GameScreen(game: GdxGame) extends GdxScreen {
+    WorldBounds.set(Gdx.graphics.getWidth, Gdx.graphics.getHeight)
+    val orbitRadius = 400
+    val gravityConstant = 1500 * 40
+    val planetMass = 200
 
-    def initialize(): Unit = {
-        val orbitRadius = 400
-        val gravityConstant = 1500 * 40
-        val planetMass = 200
 
-        WorldBounds.set(Gdx.graphics.getWidth, Gdx.graphics.getHeight)
+    val space = new GameEntity(0, 0) {
+        val renderer = new SpriteRenderer(this, "space.png")
+        setSize(WorldBounds.width, WorldBounds.height)
+    }
+    entityStage.addActor(space)
 
-        val space = new GameEntity(0, 0) {
-            val renderer = new SpriteRenderer(this, "space.png")
-            setSize(WorldBounds.width, WorldBounds.height)
-        }
-        entityStage.addActor(space)
+    val planet = new GameEntity(0, 0) {
+        val renderer = new SpriteRenderer(this, "planet.png")
+        setScale(0.4f)
+        val positioner = new PositioningCapability(this)
+    }
+    entityStage.addActor(planet)
 
-        val planet = new GameEntity(0, 0) {
-            val renderer = new SpriteRenderer(this, "planet.png")
-            setScale(0.4f)
-            val positioner = new PositioningCapability(this)
-        }
-        entityStage.addActor(planet)
-        
-        planet.positioner.centerAtActor(space)
-        val ship = new GameEntity(0, 0) {
-            val renderer = new SpriteRenderer(this, "spaceship.png")
-            setScale(0.4f)
-            val positioner = new PositioningCapability(this)
-            //            this.setOrigin(0, -300)
-            val physics = new PhysicsBehavior(this)
+    planet.positioner.centerAtActor(space)
+    val ship = new GameEntity(0, 0) {
+        val renderer = new SpriteRenderer(this, "spaceship.png")
+        setScale(0.4f)
+        val positioner = new PositioningCapability(this)
+        //            this.setOrigin(0, -300)
+        val physics = new PhysicsBehavior(this)
 
-            val thruster =
-                new GameEntity(0, 0) {
-                    val renderer = new SpriteRenderer(this, "thruster.png")
-                }
-            addActor(thruster)
-            thruster.setPosition(-thruster.getWidth, getHeight / 2 - thruster.getHeight / 2)
+        val thruster =
+            new GameEntity(0, 0) {
+                val renderer = new SpriteRenderer(this, "thruster.png")
+            }
+        addActor(thruster)
+        thruster.setPosition(-thruster.getWidth, getHeight / 2 - thruster.getHeight / 2)
 
-            val idealVel = math.sqrt(gravityConstant * planetMass / orbitRadius).toFloat
-            val vel = idealVel * Constants.speedupFactor
-            physics.setVelocityMagnitude(vel)
-            physics.setVelocityDirection(Constants.initialDirection)
+        val idealVel = math.sqrt(gravityConstant * planetMass / orbitRadius).toFloat
+        val vel = idealVel * Constants.speedupFactor
+        physics.setVelocityMagnitude(vel)
+        physics.setVelocityDirection(Constants.initialDirection)
 
-            override def act(dt: Float) {
-                var cnt = 5
-                val dtn = dt / cnt
-                var thrusterOn = false
-                if (Gdx.input.isKeyPressed(Keys.UP) || Gdx.input.isTouched) {
-                    thrusterOn = true
-                }
+        override def act(dt: Float) {
+            var cnt = 5
+            val dtn = dt / cnt
+            var thrusterOn = false
+            if (Gdx.input.isKeyPressed(Keys.UP) || Gdx.input.isTouched) {
+                thrusterOn = true
+            }
 
-                while (cnt > 0) {
-                    val avec = new Vector2(
-                        getX + getOriginX - planet.getX - planet.getOriginX,
-                        getY + getOriginY - planet.getY - planet.getOriginY
-                    )
-                    val radialAcc = gravityConstant * planetMass / avec.len2
-                    avec.nor().scl(-radialAcc)
-                    physics.addAcceleration(avec)
+            while (cnt > 0) {
+                val avec = new Vector2(
+                    getX + getOriginX - planet.getX - planet.getOriginX,
+                    getY + getOriginY - planet.getY - planet.getOriginY
+                )
+                val radialAcc = gravityConstant * planetMass / avec.len2
+                avec.nor().scl(-radialAcc)
+                physics.addAcceleration(avec)
 
-                    if (thrusterOn) {
-                        physics.addAcceleration(300, physics.velocityDirection)
-                    }
-
-                    physics.timeStep(dtn)
-                    cnt -= 1
-                }
-
-                setRotation(physics.velocityDirection)
                 if (thrusterOn) {
-                    thruster.setVisible(true)
+                    physics.addAcceleration(300, physics.velocityDirection)
                 }
-                else {
-                    thruster.setVisible(false)
-                }
+
+                physics.timeStep(dtn)
+                cnt -= 1
+            }
+
+            setRotation(physics.velocityDirection)
+            if (thrusterOn) {
+                thruster.setVisible(true)
+            }
+            else {
+                thruster.setVisible(false)
             }
         }
-        entityStage.addActor(ship)
-        ship.positioner.centerAtActor(space)
-        ship.moveBy(0, orbitRadius)
     }
+    entityStage.addActor(ship)
+    ship.positioner.centerAtActor(space)
+    ship.moveBy(0, orbitRadius)
 
     def update(dt: Float): Unit = {}
 }

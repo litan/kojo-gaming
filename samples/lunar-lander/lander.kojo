@@ -48,69 +48,61 @@ class LanderGame extends GdxGame {
 }
 
 class MenuScreen(game: GdxGame) extends GdxScreen {
-    def initialize(): Unit = {
-        val title = new GameEntity(0, 0) {
-            val renderer = new SpriteRenderer(this, "lunar-lander.png")
-        }
-
-        val startButton = new TextButton("Start", game.textButtonStyle)
-        startButton.addListener {
-            case e: InputEvent if e.getType == Type.touchDown =>
-                game.setScreen(new LanderScreen(game))
-                true
-            case _ =>
-                false
-        }
-
-        val quitButton = new TextButton("Quit", game.textButtonStyle)
-        quitButton.addListener {
-            case e: InputEvent if e.getType == Type.touchDown =>
-                Gdx.app.exit()
-                true
-            case _ =>
-                false
-        }
-
-        uiTable.add(title).colspan(2)
-        uiTable.row().pad(70)
-        uiTable.add(startButton)
-        uiTable.add(quitButton)
+    val title = new GameEntity(0, 0) {
+        val renderer = new SpriteRenderer(this, "lunar-lander.png")
     }
+
+    val startButton = new TextButton("Start", game.textButtonStyle)
+    startButton.addListener {
+        case e: InputEvent if e.getType == Type.touchDown =>
+            game.setScreen(new LanderScreen(game))
+            true
+        case _ =>
+            false
+    }
+
+    val quitButton = new TextButton("Quit", game.textButtonStyle)
+    quitButton.addListener {
+        case e: InputEvent if e.getType == Type.touchDown =>
+            Gdx.app.exit()
+            true
+        case _ =>
+            false
+    }
+
+    uiTable.add(title).colspan(2)
+    uiTable.row().pad(70)
+    uiTable.add(startButton)
+    uiTable.add(quitButton)
 
     def update(dt: Float): Unit = {}
 }
 
 class LanderScreen(game: GdxGame) extends GdxScreen {
-    var spaceShip: SpaceShip = _
-    var moon: Moon = _
     var gameOver = false
-    var velocityLabel: Label = _
-    var fpsLabel: Label = _
 
-    def initialize(): Unit = {
-        WorldBounds.set(Gdx.graphics.getWidth, Gdx.graphics.getHeight)
+    WorldBounds.set(Gdx.graphics.getWidth, Gdx.graphics.getHeight)
 
-        val space = new GameEntity(0, 0) {
-            val renderer = new SpriteRenderer(this, "space.png")
-            setSize(WorldBounds.width, WorldBounds.height)
-        }
-        entityStage.addActor(space)
-
-        moon = new Moon(0, 0, space)
-        entityStage.addActor(moon)
-        
-        spaceShip = new SpaceShip(WorldBounds.width / 2, WorldBounds.height * 4 / 5)
-        entityStage.addActor(spaceShip)
-
-        fpsLabel = new Label("FPS:", game.smallLabelStyle)
-        velocityLabel = new Label("Velocity:", game.smallLabelStyle)
-        uiTable.add(fpsLabel).width(WorldBounds.width * 0.95f)
-        uiTable.row()
-        uiTable
-            .add(velocityLabel)
-            .width(WorldBounds.width * 0.95f)
-            .padBottom(WorldBounds.height * 0.9f)
+    val space = new GameEntity(0, 0) {
+        val renderer = new SpriteRenderer(this, "space.png")
+        setSize(WorldBounds.width, WorldBounds.height)
     }
+    entityStage.addActor(space)
+
+    val moon = new Moon(0, 0, space)
+    entityStage.addActor(moon)
+
+    val spaceShip = new SpaceShip(WorldBounds.width / 2, WorldBounds.height * 4 / 5)
+    entityStage.addActor(spaceShip)
+
+    val fpsLabel = new Label("FPS:", game.smallLabelStyle)
+    val velocityLabel = new Label("Velocity:", game.smallLabelStyle)
+    uiTable.add(fpsLabel).width(WorldBounds.width * 0.95f)
+    uiTable.row()
+    uiTable
+        .add(velocityLabel)
+        .width(WorldBounds.width * 0.95f)
+        .padBottom(WorldBounds.height * 0.9f)
 
     val shipCollider = spaceShip.getComponent[Collider]
     val moonCollider = moon.getComponent[Collider]
@@ -226,23 +218,19 @@ class Explosion(x: Float, y: Float) extends GameEntity(x, y) {
 }
 
 class MessageScreen(game: GdxGame, message: String, color: Color) extends GdxScreen {
-    def initialize(): Unit = {
-
-        val okButton = new TextButton("Ok", game.textButtonStyle)
-
-        okButton.addListener {
-            case e: InputEvent if e.getType == Type.touchDown =>
-                game.setScreen(new MenuScreen(game))
-                true
-            case _ =>
-                false
-        }
-
-        game.largeLabelStyle.fontColor = color
-        uiTable.add(new Label(message, game.largeLabelStyle))
-        uiTable.row().pad(70f)
-        uiTable.add(okButton)
+    val okButton = new TextButton("Ok", game.textButtonStyle)
+    okButton.addListener {
+        case e: InputEvent if e.getType == Type.touchDown =>
+            game.setScreen(new MenuScreen(game))
+            true
+        case _ =>
+            false
     }
+
+    game.largeLabelStyle.fontColor = color
+    uiTable.add(new Label(message, game.largeLabelStyle))
+    uiTable.row().pad(70f)
+    uiTable.add(okButton)
 
     def update(dt: Float): Unit = {}
 }

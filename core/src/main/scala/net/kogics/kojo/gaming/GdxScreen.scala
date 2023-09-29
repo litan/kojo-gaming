@@ -14,9 +14,6 @@ abstract class GdxScreen extends Screen with InputProcessor {
   val uiTable = new Table()
   uiTable.setFillParent(true)
   uiStage.addActor(uiTable)
-  initialize()
-
-  def initialize(): Unit
 
   def update(dt: Float): Unit
 
