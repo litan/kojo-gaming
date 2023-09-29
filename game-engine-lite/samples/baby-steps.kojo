@@ -18,7 +18,7 @@ class Player(x0: Float, y0: Float) extends GameEntity(x0, y0) {
     override def update(dt: Float) {
         super.update(dt)
         if (isKeyPressed(Kc.VK_SPACE)) {
-            physics.addAcceleration(200, 30)
+            physics.addAcceleration(200, 180)
         }
         physics.timeStep(dt)
         wb.bounceOff()
