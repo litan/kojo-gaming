@@ -6,9 +6,9 @@ originBottomLeft()
 WorldBounds.set(cwidth, cheight)
 
 class SpaceShip(x0: Float, y0: Float) extends GameEntity(x0, y0) {
-    protected val renderer = new RectRenderer(this, 50, 50)
+    val renderer = new RectRenderer(this, 40, 60)
     private val collider = new Collider(this)
-    setColor(cm.lightBlue)
+    setColor(cm.red)
     private val physics = new PhysicsBehavior(this)
     physics.setMaxSpeed(500)
     physics.setFrictionMagnitude(10)
@@ -30,14 +30,14 @@ class SpaceShip(x0: Float, y0: Float) extends GameEntity(x0, y0) {
     }
 }
 
-class Thruster extends GameEntity(15, -30) {
-    protected val renderer = new RectRenderer(this, 20, 30)
-    setColor(cm.red)
+class Thruster extends GameEntity(10, -30) {
+    val renderer = new RectRenderer(this, 20, 30)
+    setColor(cm.orange)
 }
 
 class Moon(x: Float, y: Float, bg: GameEntity) extends GameEntity(x, y) {
-    protected val renderer = new RectRenderer(this, 300, 50)
-    setColor(cm.blue)
+    val renderer = new RectRenderer(this, 300, 50)
+    setColor(cm.lightBlue)
     private val collider = new Collider(this)
     private val positioner = new PositioningCapability(this)
     positioner.centerAtActor(bg)
@@ -45,8 +45,8 @@ class Moon(x: Float, y: Float, bg: GameEntity) extends GameEntity(x, y) {
 }
 
 class Meteor(x: Float, y: Float) extends GameEntity(x, y) {
-    protected val renderer = new RectRenderer(this, 20, 20)
-    setColor(ColorMaker.hsl(20, 0.90, 0.40))
+    val renderer = new RectRenderer(this, 20, 20)
+    setColor(ColorMaker.hsl(131, 0.6, 0.5))
     private val physics = new PhysicsBehavior(this)
     physics.setVelocity(150, random(10))
     private val wb = new WorldBoundsCapability(this)
