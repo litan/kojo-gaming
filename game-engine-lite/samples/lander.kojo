@@ -32,7 +32,7 @@ class SpaceShip(x0: Float, y0: Float) extends GameEntity(x0, y0) {
 
 class Thruster extends GameEntity(10, -30) {
     val renderer = new RectRenderer(this, 20, 30)
-    setColor(cm.orange)
+    setColor(ColorMaker.hsl(45, 1.00, 0.50))
 }
 
 class Moon(x: Float, y: Float, bg: GameEntity) extends GameEntity(x, y) {
