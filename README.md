@@ -9,7 +9,7 @@ Here are some of the high-level features of kojo-gaming:
   - world boundary behaviors (bouncing, wrapping, etc).
   - and more...
 - It is hardware accelerated for good performance - based on OpenGL via LibGDX and LWJGL (the tech used by Minecraft!)
-- Games made in Kojo can be exported to Desktop or Mobile (via LibGDX).
+- Games made in Kojo can be exported to [Desktop or Mobile](https://github.com/litan/kojo-gaming-template).
 
 And here's a quick screenshot of a [game made with kojo-gaming](samples/lunar-lander/lander.kojo):
 
