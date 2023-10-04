@@ -15,4 +15,4 @@ And here's a quick screenshot of a [game made with kojo-gaming](samples/lunar-la
 
 ![Lunar Lander Screenshot](samples/lunar-lander/lander-screenshot.png)
 
-To start playing, check out the [Proof of concept](https://github.com/litan/kojo-gaming/releases) release!
+To start playing, check out [the latest release](https://github.com/litan/kojo-gaming/releases)!
