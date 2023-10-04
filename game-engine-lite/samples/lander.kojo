@@ -81,12 +81,12 @@ class LanderScreen extends StageScreen {
         activateCanvas()
     }
 
-    val shipCollider = spaceShip.getComponent[Collider]
-    val moonCollider = moon.getComponent[Collider]
+    val shipCollider = spaceShip.getComponent(classOf[Collider])
+    val moonCollider = moon.getComponent(classOf[Collider])
     val meteorColliders = for (meteor <- meteors) yield {
-        meteor.getComponent[Collider]
+        meteor.getComponent(classOf[Collider])
     }
-    val shipPhysics = spaceShip.getComponent[PhysicsBehavior]
+    val shipPhysics = spaceShip.getComponent(classOf[PhysicsBehavior])
 
     def update(dt: Float) {
         for (meteorCollider <- meteorColliders) {

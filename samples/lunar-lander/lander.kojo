@@ -104,9 +104,9 @@ class LanderScreen(game: GdxGame) extends GdxScreen {
         .width(WorldBounds.width * 0.95f)
         .padBottom(WorldBounds.height * 0.9f)
 
-    val shipCollider = spaceShip.getComponent[Collider]
-    val moonCollider = moon.getComponent[Collider]
-    val shipPhysics = spaceShip.getComponent[PhysicsBehavior]
+    val shipCollider = spaceShip.getComponent(classOf[Collider])
+    val moonCollider = moon.getComponent(classOf[Collider])
+    val shipPhysics = spaceShip.getComponent(classOf[PhysicsBehavior])
 
     def update(dt: Float): Unit = {
         if (!gameOver) {

@@ -16,7 +16,6 @@ package net.kogics.kojo.gaming
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
-import scala.reflect.ClassTag
 
 import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode
@@ -28,7 +27,6 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter
 import com.badlogic.gdx.math._
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.{ Array => GdxArray }
 import com.badlogic.gdx.Gdx
 
@@ -387,7 +385,7 @@ object WorldBounds {
 class WorldBoundsCapability(ge: GameEntity) {
   ge.addComponent(this)
   import WorldBounds.boundsRect
-  val pc = ge.getComponent[PhysicsBehavior]
+  val pc = ge.getComponent(classOf[PhysicsBehavior])
 
   def wrapAround(): Unit = {
     if (ge.getX + ge.getWidth < 0) {
@@ -477,14 +475,13 @@ abstract class GameEntity(x: Float, y: Float) extends Group {
 
   private var components = new mutable.HashMap[String, Any]
 
-  def addComponent[C: ClassTag](c: C): Unit = {
-    val cls = implicitly[ClassTag[C]].runtimeClass
+  def addComponent(c: AnyRef): Unit = {
+    val cls = c.getClass
     components.put(cls.getName, c)
   }
 
-  def getComponent[C: ClassTag]: C = {
-    val cls = implicitly[ClassTag[C]].runtimeClass
-    components(cls.getName).asInstanceOf[C]
+  def getComponent[T](cls: Class[T]): T = {
+    components(cls.getName).asInstanceOf[T]
   }
 
   setPosition(x, y)

@@ -193,14 +193,13 @@ abstract class GameEntity(x0: Float, y0: Float) {
     private var visible = true
     private var color = noColor
     private var components = new HashMap[String, Any]
-    import scala.reflect.ClassTag
-    def addComponent[C: ClassTag](c: C): Unit = {
-        val cls = implicitly[ClassTag[C]].runtimeClass
+    def addComponent(c: AnyRef): Unit = {
+        val cls = c.getClass
         components.put(cls.getName, c)
     }
-    def getComponent[C: ClassTag]: C = {
-        val cls = implicitly[ClassTag[C]].runtimeClass
-        components(cls.getName).asInstanceOf[C]
+
+    def getComponent[T](cls: Class[T]): T = {
+        components(cls.getName).asInstanceOf[T]
     }
 
     protected def renderer: Renderer
@@ -383,7 +382,7 @@ object WorldBounds {
 
 class WorldBoundsCapability(ge: GameEntity) {
     ge.addComponent(this)
-    val pc = ge.getComponent[PhysicsBehavior]
+    val pc = ge.getComponent(classOf[PhysicsBehavior])
     import WorldBounds.boundsRect
 
     def wrapAround(): Unit = {
