@@ -10,6 +10,9 @@ case class Rectangle(x: Float, y: Float, width: Float, height: Float) {
             y < r.y + r.height && y + height > r.y
     }
 }
+
+// This is similar to the libGDX Vector2 class, for easy migration
+// to libGDX from the drawing canvas.
 class Vector2(x0: Float, y0: Float) {
     var x = x0
     var y = y0
