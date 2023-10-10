@@ -146,6 +146,10 @@ class Stage {
         root.addChild(ge)
     }
 
+    def removeEntity(ge: GameEntity) {
+        root.removeChild(ge)
+    }
+
     def update(dt: Float) {
         root.update(dt)
     }
@@ -292,6 +296,8 @@ class PhysicsBehavior(ge: GameEntity) extends Behavior {
 
     def speed: Float = currVelocity.len
 
+    def isMoving: Boolean = speed > 0
+
     def velocity: Vector2 = currVelocity
 
     def setVelocity(vx: Float, vy: Float): Unit = {
@@ -303,13 +309,15 @@ class PhysicsBehavior(ge: GameEntity) extends Behavior {
         else currVelocity.setLength(speed)
     }
 
-    def isMoving: Boolean = speed > 0
-
     def setVelocityDirection(angle: Float): Unit = {
         currVelocity.setAngleDeg(angle)
     }
 
     def velocityDirection: Float = currVelocity.angleDeg
+
+    def addVelocity(vx: Float, vy: Float): Unit = {
+        currVelocity.add(vx, vy)
+    }
 
     def addAcceleration(acc: Vector2): Unit = {
         accumulatedAcceleration.add(acc)
@@ -441,5 +449,13 @@ class WorldBoundsCapability(ge: GameEntity) {
             setY(boundsRect.height - getHeight)
             flipYVel()
         }
+    }
+
+    def isOutside: Boolean = {
+        import ge._
+        (getX + getWidth < 0) ||
+            (getX > boundsRect.width) ||
+            (getY + getHeight < 0) ||
+            (getY > boundsRect.height)
     }
 }
