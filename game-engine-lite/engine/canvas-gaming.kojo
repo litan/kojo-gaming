@@ -20,7 +20,7 @@ class Vector2(x0: Float, y0: Float) {
         x = nx
         y = ny
     }
-    def scale(scalar: Float): Unit = {
+    def scl(scalar: Float): Unit = {
         x *= scalar
         y *= scalar
     }
@@ -34,7 +34,7 @@ class Vector2(x0: Float, y0: Float) {
         if (oldLen2 == 0 || oldLen2 == length2) {
             return
         }
-        scale(math.sqrt(length2 / oldLen2).toFloat)
+        scl(math.sqrt(length2 / oldLen2).toFloat)
     }
     def rotateRad(radians: Float): Unit = {
         val cos = Math.cos(radians).toFloat
@@ -112,13 +112,16 @@ abstract class StageScreen extends Screen {
     def update(dt: Float): Unit
     var active = true
 
-    def show() {}
-    def hide() { active = false }
+    def show() {
+        activateCanvas()
+    }
+    def hide() {
+        active = false
+    }
     def render(canvas: CanvasDraw, dt: Float) {
-        stage.update(dt)
+        stage.act(dt)
         update(dt)
         canvas.background(black)
-        canvas.rect(0, 0, cwidth, cheight)
         if (active) {
             stage.draw(canvas)
         }
@@ -140,6 +143,7 @@ abstract class PicScreen extends Screen {
 class Stage {
     val root = new GameEntity(0, 0) {
         val renderer = new NoOpRenderer(this)
+        def update(dt: Float): Unit = {}
     }
 
     def addEntity(ge: GameEntity) {
@@ -150,8 +154,8 @@ class Stage {
         root.removeChild(ge)
     }
 
-    def update(dt: Float) {
-        root.update(dt)
+    def act(dt: Float) {
+        root.act(dt)
     }
 
     def draw(canvas: CanvasDraw) {
@@ -172,7 +176,7 @@ class RectRenderer(ge: GameEntity, w: Float, h: Float) extends Renderer {
     def timeStep(dt: Float): Unit = {}
     def draw(canvas: CanvasDraw): Unit = {
         import ge._
-        canvas.rect(getX, getY, getWidth, getHeight)
+        canvas.rect(0, 0, getWidth, getHeight)
     }
 }
 
@@ -232,23 +236,26 @@ abstract class GameEntity(x0: Float, y0: Float) {
         height = h
     }
 
-    def update(dt: Float): Unit = {
+    def act(dt: Float): Unit = {
         children.foreach { child =>
-            child.update(dt)
+            child.act(dt)
         }
+        update(dt)
     }
+
+    def update(dt: Float): Unit
 
     def draw(canvas: CanvasDraw): Unit = {
         if (visible) {
             canvas.pushMatrix()
             canvas.translate(x, y)
+            canvas.fill(color)
+            canvas.stroke(color)
+            renderer.draw(canvas)
             children.foreach { child =>
                 child.draw(canvas)
             }
             canvas.popMatrix()
-            canvas.fill(color)
-            canvas.stroke(color)
-            renderer.draw(canvas)
         }
     }
 
@@ -315,8 +322,8 @@ class PhysicsBehavior(ge: GameEntity) extends Behavior {
 
     def velocityDirection: Float = currVelocity.angleDeg
 
-    def addVelocity(vx: Float, vy: Float): Unit = {
-        currVelocity.add(vx, vy)
+    def addVelocity(vel: Vector2): Unit = {
+        currVelocity.add(vel.x, vel.y)
     }
 
     def addAcceleration(acc: Vector2): Unit = {

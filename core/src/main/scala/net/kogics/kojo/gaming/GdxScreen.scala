@@ -2,15 +2,15 @@ package net.kogics.kojo.gaming
 
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.Screen
 
 abstract class GdxScreen extends Screen with InputProcessor {
-  val entityStage = new Stage()
-  private val uiStage = new Stage()
+  WorldBounds.set(Gdx.graphics.getWidth, Gdx.graphics.getHeight)
+  val stage = new GdxStage()
+  private val uiStage = new GdxStage()
   val uiTable = new Table()
   uiTable.setFillParent(true)
   uiStage.addActor(uiTable)
@@ -19,14 +19,14 @@ abstract class GdxScreen extends Screen with InputProcessor {
 
   override def render(dt: Float): Unit = {
     uiStage.act(dt)
-    entityStage.act(dt)
+    stage.act(dt)
 
     update(dt)
 
     Gdx.gl.glClearColor(0, 0, 0, 1)
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
-    entityStage.draw()
+    stage.draw()
     uiStage.draw()
   }
 
@@ -43,14 +43,14 @@ abstract class GdxScreen extends Screen with InputProcessor {
     val im = Gdx.input.getInputProcessor.asInstanceOf[InputMultiplexer]
     im.addProcessor(this)
     im.addProcessor(uiStage)
-    im.addProcessor(entityStage)
+    im.addProcessor(stage)
   }
 
   override def hide(): Unit = {
     val im = Gdx.input.getInputProcessor.asInstanceOf[InputMultiplexer]
     im.removeProcessor(this)
     im.removeProcessor(uiStage)
-    im.removeProcessor(entityStage)
+    im.removeProcessor(stage)
   }
 
   override def keyDown(keycode: Int) = false

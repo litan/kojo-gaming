@@ -230,6 +230,8 @@ class PhysicsBehavior(ge: GameEntity) extends Behavior {
 
   def speed: Float = currVelocity.len()
 
+  def isMoving: Boolean = speed > 0
+
   def velocity: Vector2 = currVelocity
 
   def setVelocity(vx: Float, vy: Float): Unit = {
@@ -241,13 +243,15 @@ class PhysicsBehavior(ge: GameEntity) extends Behavior {
     else currVelocity.setLength(speed)
   }
 
-  def isMoving: Boolean = speed > 0
-
   def setVelocityDirection(angle: Float): Unit = {
     currVelocity.setAngleDeg(angle)
   }
 
   def velocityDirection: Float = currVelocity.angleDeg
+
+  def addVelocity(vel: Vector2): Unit = {
+    currVelocity.add(vel.x, vel.y)
+  }
 
   def addAcceleration(acc: Vector2): Unit = {
     accumulatedAcceleration.add(acc)
@@ -441,6 +445,14 @@ class WorldBoundsCapability(ge: GameEntity) {
       flipYVel()
     }
   }
+
+  def isOutside: Boolean = {
+    import ge._
+    (getX + getWidth < 0) ||
+      (getX > boundsRect.width) ||
+      (getY + getHeight < 0) ||
+      (getY > boundsRect.height)
+  }
 }
 
 class PositioningCapability(ge: GameEntity) {
@@ -491,9 +503,12 @@ abstract class GameEntity(x: Float, y: Float) extends Group {
   }
 
   override def act(dt: Float): Unit = {
-    super.act(dt)
+    super.act(dt) // runs actions and calls act on children
+    update(dt)
     renderer.timeStep(dt)
   }
+
+  def update(dt: Float): Unit
 
   override def draw(batch: Batch, parentAlpha: Float): Unit = {
     val c = getColor
@@ -501,6 +516,6 @@ abstract class GameEntity(x: Float, y: Float) extends Group {
     if (isVisible) {
       renderer.draw(batch, parentAlpha)
     }
-    super.draw(batch, parentAlpha)
+    super.draw(batch, parentAlpha) // draws children
   }
 }

@@ -47,19 +47,20 @@ class GameScreen(game: GdxGame) extends GdxScreen {
     val gravityConstant = 1500 * 40
     val planetMass = 200
 
-
     val space = new GameEntity(0, 0) {
         val renderer = new SpriteRenderer(this, "space.png")
         setSize(WorldBounds.width, WorldBounds.height)
+        def update(dt: Float) {}
     }
-    entityStage.addActor(space)
+    stage.addEntity(space)
 
     val planet = new GameEntity(0, 0) {
         val renderer = new SpriteRenderer(this, "planet.png")
         setScale(0.4f)
         val positioner = new PositioningCapability(this)
+        def update(dt: Float) {}
     }
-    entityStage.addActor(planet)
+    stage.addEntity(planet)
 
     planet.positioner.centerAtActor(space)
     val ship = new GameEntity(0, 0) {
@@ -72,6 +73,7 @@ class GameScreen(game: GdxGame) extends GdxScreen {
         val thruster =
             new GameEntity(0, 0) {
                 val renderer = new SpriteRenderer(this, "thruster.png")
+                def update(dt: Float) {}
             }
         addActor(thruster)
         thruster.setPosition(-thruster.getWidth, getHeight / 2 - thruster.getHeight / 2)
@@ -81,7 +83,7 @@ class GameScreen(game: GdxGame) extends GdxScreen {
         physics.setVelocityMagnitude(vel)
         physics.setVelocityDirection(Constants.initialDirection)
 
-        override def act(dt: Float) {
+        def update(dt: Float) {
             var cnt = 5
             val dtn = dt / cnt
             var thrusterOn = false
@@ -115,7 +117,7 @@ class GameScreen(game: GdxGame) extends GdxScreen {
             }
         }
     }
-    entityStage.addActor(ship)
+    stage.addEntity(ship)
     ship.positioner.centerAtActor(space)
     ship.moveBy(0, orbitRadius)
 

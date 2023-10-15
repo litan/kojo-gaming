@@ -16,8 +16,7 @@ class SpaceShip(x0: Float, y0: Float) extends GameEntity(x0, y0) {
     val thruster = new Thruster()
     addChild(thruster)
 
-    override def update(dt: Float) {
-        super.update(dt)
+    def update(dt: Float) {
         if (isKeyPressed(Kc.VK_UP)) {
             physics.addAcceleration(300, 90)
             thruster.setVisible(true)
@@ -33,6 +32,7 @@ class SpaceShip(x0: Float, y0: Float) extends GameEntity(x0, y0) {
 class Thruster extends GameEntity(10, -30) {
     val renderer = new RectRenderer(this, 20, 30)
     setColor(ColorMaker.hsl(45, 1.00, 0.50))
+    def update(dt: Float): Unit = {}
 }
 
 class Moon(x: Float, y: Float, bg: GameEntity) extends GameEntity(x, y) {
@@ -42,6 +42,7 @@ class Moon(x: Float, y: Float, bg: GameEntity) extends GameEntity(x, y) {
     private val positioner = new PositioningCapability(this)
     positioner.centerAtActor(bg)
     moveBy(0, -(bg.getHeight / 2 - 0))
+    def update(dt: Float): Unit = {}
 }
 
 class Meteor(x: Float, y: Float) extends GameEntity(x, y) {
@@ -52,7 +53,7 @@ class Meteor(x: Float, y: Float) extends GameEntity(x, y) {
     private val wb = new WorldBoundsCapability(this)
     private val collider = new Collider(this)
 
-    override def update(dt: Float) {
+    def update(dt: Float) {
         physics.timeStep(dt)
         wb.bounceOff()
     }
@@ -62,6 +63,7 @@ class LanderScreen extends StageScreen {
     val space = new GameEntity(0, 0) {
         val renderer = new RectRenderer(this, cwidth, cheight)
         setColor(ColorMaker.hsl(300, 1.00, 0.07))
+        def update(dt: Float): Unit = {}
     }
     stage.addEntity(space)
 
@@ -75,10 +77,6 @@ class LanderScreen extends StageScreen {
         val meteor = new Meteor(random(cwidth), random(200))
         stage.addEntity(meteor)
         meteor
-    }
-
-    override def show() {
-        activateCanvas()
     }
 
     val shipCollider = spaceShip.getComponent(classOf[Collider])
@@ -128,9 +126,7 @@ class DoneScreen(msg: String) extends PicScreen {
 val game = new Game()
 
 def setup(c: CanvasDraw) {
-    c.stroke(black)
-    c.fill(black)
-    c.rect(0, 0, cwidth, cheight)
+    c.background(black)
     game.setScreen(new StartScreen)
 }
 

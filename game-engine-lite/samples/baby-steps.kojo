@@ -15,8 +15,7 @@ class Player(x0: Float, y0: Float) extends GameEntity(x0, y0) {
 
     val wb = new WorldBoundsCapability(this)
 
-    override def update(dt: Float) {
-        super.update(dt)
+    def update(dt: Float) {
         if (isKeyPressed(Kc.VK_SPACE)) {
             physics.addAcceleration(200, 180)
         }
@@ -33,16 +32,13 @@ class GameScreen extends StageScreen {
         activateCanvas()
     }
 
-    def update(dt: Float) {
-    }
+    def update(dt: Float) {}
 }
 
 val game = new Game()
 
 def setup(c: CanvasDraw) {
-    c.stroke(black)
-    c.fill(black)
-    c.rect(0, 0, cwidth, cheight)
+    c.background(black)
     game.setScreen(new GameScreen)
 }
 

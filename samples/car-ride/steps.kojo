@@ -46,13 +46,13 @@ class BabySteps extends GdxGame {
 class PlayScreen extends GdxScreen {
     WorldBounds.set(Gdx.graphics.getWidth, Gdx.graphics.getHeight)
     val player = new Player(WorldBounds.width / 2 - 25, WorldBounds.height / 2 - 25)
-    stage.addEntity(player)
+    entityStage.addActor(player)
 
     def update(dt: Float): Unit = {}
 }
 
 class Player(x: Float, y: Float) extends GameEntity(x, y) {
-    val renderer = new SpriteRenderer(this, "spaceship.png")
+    val renderer = new SpriteRenderer(this, "car1.png")
     private val physics = new PhysicsBehavior(this)
     physics.setMaxSpeed(500)
     physics.setFrictionMagnitude(10)
@@ -60,7 +60,8 @@ class Player(x: Float, y: Float) extends GameEntity(x, y) {
     physics.setVelocity(50, 20)
     val wb = new WorldBoundsCapability(this)
 
-    def update(dt: Float): Unit = {
+    override def act(dt: Float): Unit = {
+        super.act(dt)
         if (Gdx.input.isKeyPressed(Keys.SPACE) || Gdx.input.isTouched) {
             physics.addAcceleration(200, 180)
         }

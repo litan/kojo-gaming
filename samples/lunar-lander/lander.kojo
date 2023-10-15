@@ -50,6 +50,7 @@ class LanderGame extends GdxGame {
 class MenuScreen(game: GdxGame) extends GdxScreen {
     val title = new GameEntity(0, 0) {
         val renderer = new SpriteRenderer(this, "lunar-lander.png")
+        def update(dt: Float) {}
     }
 
     val startButton = new TextButton("Start", game.textButtonStyle)
@@ -86,14 +87,15 @@ class LanderScreen(game: GdxGame) extends GdxScreen {
     val space = new GameEntity(0, 0) {
         val renderer = new SpriteRenderer(this, "space.png")
         setSize(WorldBounds.width, WorldBounds.height)
+        def update(dt: Float) {}
     }
-    entityStage.addActor(space)
+    stage.addActor(space)
 
     val moon = new Moon(0, 0, space)
-    entityStage.addActor(moon)
+    stage.addActor(moon)
 
     val spaceShip = new SpaceShip(WorldBounds.width / 2, WorldBounds.height * 4 / 5)
-    entityStage.addActor(spaceShip)
+    stage.addActor(spaceShip)
 
     val fpsLabel = new Label("FPS:", game.smallLabelStyle)
     val velocityLabel = new Label("Velocity:", game.smallLabelStyle)
@@ -118,7 +120,7 @@ class LanderScreen(game: GdxGame) extends GdxScreen {
             if (shipCollider.collidesWith(moonCollider)) {
                 if (shipPhysics.speed > 60) {
                     val explosion = new Explosion(0, 0)
-                    entityStage.addActor(explosion)
+                    stage.addActor(explosion)
                     explosion.positioner.centerAtActor(spaceShip)
                     explosion.moveBy(0, -5)
                     explosion.scaleBy(0.1f)
@@ -162,6 +164,7 @@ class SpaceShip(x: Float, y: Float) extends GameEntity(x, y) {
         else
             new GameEntity(0, 0) {
                 val renderer = new SpriteRenderer(this, "thruster.png")
+                def update(dt: Float) {}
             }
 
     addActor(thruster)
@@ -171,8 +174,7 @@ class SpaceShip(x: Float, y: Float) extends GameEntity(x, y) {
         thruster.setScale(0.35f)
     }
 
-    override def act(dt: Float): Unit = {
-        super.act(dt)
+    def update(dt: Float): Unit = {
         if (active) {
             if (Gdx.input.isKeyPressed(Keys.UP) || Gdx.input.isTouched) {
                 physics.addAcceleration(300, 90)
@@ -202,6 +204,7 @@ class Moon(x: Float, y: Float, bg: GameEntity) extends GameEntity(x, y) {
     private val positioner = new PositioningCapability(this)
     positioner.centerAtActor(bg)
     moveBy(0, -(bg.getHeight / 2 - 0))
+    def update(dt: Float) {}
 }
 
 class Explosion(x: Float, y: Float) extends GameEntity(x, y) {
@@ -209,8 +212,7 @@ class Explosion(x: Float, y: Float) extends GameEntity(x, y) {
     renderer.loadAnimationFromSheet("explosion.png", 5, 5, 0.03f, false)
     val positioner = new PositioningCapability(this)
 
-    override def act(dt: Float): Unit = {
-        super.act(dt)
+    def update(dt: Float): Unit = {
         if (renderer.isAnimationFinished) {
             remove()
         }
