@@ -197,6 +197,7 @@ class EllipseRenderer(ge: GameEntity) extends Renderer {
 abstract class GameEntity(x0: Float, y0: Float) {
     private var x = x0
     private var y = y0
+    private var angle = 0f
     private var width = 0.0f
     private var height = 0.0f
     private val children = ArrayBuffer.empty[GameEntity]
@@ -249,6 +250,11 @@ abstract class GameEntity(x0: Float, y0: Float) {
         if (visible) {
             canvas.pushMatrix()
             canvas.translate(x, y)
+            if (angle != 0) {
+                canvas.translate(width / 2, height / 2)
+                canvas.rotate(angle.toRadians)
+                canvas.translate(-width / 2, -height / 2)
+            }
             canvas.fill(color)
             canvas.stroke(color)
             renderer.draw(canvas)
@@ -282,6 +288,13 @@ abstract class GameEntity(x0: Float, y0: Float) {
     def getColor = color
     def setColor(c: Color): Unit = {
         color = c
+    }
+    def getRotation = angle
+    def setRotation(a: Float) {
+        angle = a
+    }
+    def rotateBy(a: Float) {
+        angle = (angle + a) % 360
     }
 }
 
@@ -337,7 +350,7 @@ class PhysicsBehavior(ge: GameEntity) extends Behavior {
     }
 
     def addAcceleration(magnitude: Float): Unit = {
-        addAcceleration(magnitude, 0)
+        addAcceleration(magnitude, ge.getRotation)
     }
 
     def timeStep(dt: Float): Unit = {
