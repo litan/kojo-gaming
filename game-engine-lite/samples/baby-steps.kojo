@@ -28,10 +28,6 @@ class GameScreen extends StageScreen {
     val player = new Player(cwidth / 2 - 25, cheight / 2 - 25)
     stage.addEntity(player)
 
-    override def show() {
-        activateCanvas()
-    }
-
     def update(dt: Float) {}
 }
 

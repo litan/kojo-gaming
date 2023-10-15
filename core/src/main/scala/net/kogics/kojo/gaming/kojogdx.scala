@@ -463,7 +463,7 @@ class PositioningCapability(ge: GameEntity) {
     ge.setPosition(x - ge.getWidth / 2, y - ge.getHeight / 2)
   }
 
-  def centerAtActor(other: GameEntity): Unit = {
+  def centerAtEntity(other: GameEntity): Unit = {
     centerAtPosition(other.getX + other.getWidth / 2, other.getY + other.getHeight / 2)
   }
 
@@ -486,6 +486,7 @@ abstract class GameEntity(x: Float, y: Float) extends Group {
   protected def renderer: Renderer
 
   private var components = new mutable.HashMap[String, Any]
+  setPosition(x, y)
 
   def addComponent(c: AnyRef): Unit = {
     val cls = c.getClass
@@ -496,7 +497,9 @@ abstract class GameEntity(x: Float, y: Float) extends Group {
     components(cls.getName).asInstanceOf[T]
   }
 
-  setPosition(x, y)
+  def addChild(ge: Actor): Unit = {
+    addActor(ge)
+  }
 
   def setOpacity(opacity: Float): Unit = {
     this.getColor.a = opacity

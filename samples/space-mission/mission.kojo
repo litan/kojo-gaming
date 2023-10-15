@@ -1,5 +1,8 @@
 // #exec
 
+// For now, just a rocket rotating around a planet
+// You can fire thrusters with the up arrow
+
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.badlogic.gdx.Gdx
@@ -62,7 +65,7 @@ class GameScreen(game: GdxGame) extends GdxScreen {
     }
     stage.addEntity(planet)
 
-    planet.positioner.centerAtActor(space)
+    planet.positioner.centerAtEntity(space)
     val ship = new GameEntity(0, 0) {
         val renderer = new SpriteRenderer(this, "spaceship.png")
         setScale(0.4f)
@@ -75,7 +78,7 @@ class GameScreen(game: GdxGame) extends GdxScreen {
                 val renderer = new SpriteRenderer(this, "thruster.png")
                 def update(dt: Float) {}
             }
-        addActor(thruster)
+        addChild(thruster)
         thruster.setPosition(-thruster.getWidth, getHeight / 2 - thruster.getHeight / 2)
 
         val idealVel = math.sqrt(gravityConstant * planetMass / orbitRadius).toFloat
@@ -118,7 +121,7 @@ class GameScreen(game: GdxGame) extends GdxScreen {
         }
     }
     stage.addEntity(ship)
-    ship.positioner.centerAtActor(space)
+    ship.positioner.centerAtEntity(space)
     ship.moveBy(0, orbitRadius)
 
     def update(dt: Float): Unit = {}

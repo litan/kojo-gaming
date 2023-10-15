@@ -82,20 +82,18 @@ class MenuScreen(game: GdxGame) extends GdxScreen {
 class LanderScreen(game: GdxGame) extends GdxScreen {
     var gameOver = false
 
-    WorldBounds.set(Gdx.graphics.getWidth, Gdx.graphics.getHeight)
-
     val space = new GameEntity(0, 0) {
         val renderer = new SpriteRenderer(this, "space.png")
         setSize(WorldBounds.width, WorldBounds.height)
         def update(dt: Float) {}
     }
-    stage.addActor(space)
+    stage.addEntity(space)
 
     val moon = new Moon(0, 0, space)
-    stage.addActor(moon)
+    stage.addEntity(moon)
 
     val spaceShip = new SpaceShip(WorldBounds.width / 2, WorldBounds.height * 4 / 5)
-    stage.addActor(spaceShip)
+    stage.addEntity(spaceShip)
 
     val fpsLabel = new Label("FPS:", game.smallLabelStyle)
     val velocityLabel = new Label("Velocity:", game.smallLabelStyle)
@@ -120,8 +118,8 @@ class LanderScreen(game: GdxGame) extends GdxScreen {
             if (shipCollider.collidesWith(moonCollider)) {
                 if (shipPhysics.speed > 60) {
                     val explosion = new Explosion(0, 0)
-                    stage.addActor(explosion)
-                    explosion.positioner.centerAtActor(spaceShip)
+                    stage.addEntity(explosion)
+                    explosion.positioner.centerAtEntity(spaceShip)
                     explosion.moveBy(0, -5)
                     explosion.scaleBy(0.1f)
                     spaceShip.remove()
@@ -167,7 +165,7 @@ class SpaceShip(x: Float, y: Float) extends GameEntity(x, y) {
                 def update(dt: Float) {}
             }
 
-    addActor(thruster)
+    addChild(thruster)
     thruster.setPosition(-thruster.getWidth, getHeight / 2 - thruster.getHeight / 2)
     if (Constants.usePE) {
         thruster.setRotation(90)
@@ -202,7 +200,7 @@ class Moon(x: Float, y: Float, bg: GameEntity) extends GameEntity(x, y) {
     private val collider = new Collider(this)
     collider.setBoundaryPolygon(8)
     private val positioner = new PositioningCapability(this)
-    positioner.centerAtActor(bg)
+    positioner.centerAtEntity(bg)
     moveBy(0, -(bg.getHeight / 2 - 0))
     def update(dt: Float) {}
 }

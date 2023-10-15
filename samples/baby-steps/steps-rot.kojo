@@ -53,7 +53,7 @@ class PlayScreen extends GdxScreen {
 }
 
 class Player(x: Float, y: Float) extends GameEntity(x, y) {
-    val renderer = new SpriteRenderer(this, "car1.png")
+    val renderer = new SpriteRenderer(this, "spaceship.png")
     private val physics = new PhysicsBehavior(this)
     physics.setMaxSpeed(500)
     val wb = new WorldBoundsCapability(this)
