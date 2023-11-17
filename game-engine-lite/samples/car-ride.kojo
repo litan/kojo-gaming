@@ -1,4 +1,4 @@
-// #include /home/lalit/work/kojo-gaming/game-engine-lite/engine/canvas-gaming.kojo
+// #include ../engine/canvas-gaming.kojo
 
 cleari()
 clearOutput()
