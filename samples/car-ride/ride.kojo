@@ -30,7 +30,7 @@ object Launcher {
 
     def defaultConfig = {
         val configuration = new Lwjgl3ApplicationConfiguration()
-        configuration.setTitle("Baby Steps")
+        configuration.setTitle("Car Ride")
         configuration.useVsync(true)
         configuration.setForegroundFPS(Lwjgl3ApplicationConfiguration.getDisplayMode().refreshRate)
         configuration.setWindowedMode(1000, 800)
