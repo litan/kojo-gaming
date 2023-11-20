@@ -185,13 +185,25 @@ class NoOpRenderer(ge: GameEntity) extends Renderer {
     def draw(canvas: CanvasDraw): Unit = {}
 }
 
-class EllipseRenderer(ge: GameEntity) extends Renderer {
+class EllipseRenderer(ge: GameEntity, w: Float, h: Float) extends Renderer {
+    ge.setSize(w, h)
     def timeStep(dt: Float): Unit = {}
     def draw(canvas: CanvasDraw): Unit = {
         import ge._
-        canvas.ellipse(getX + getWidth / 2, getY + getHeight / 2, getWidth, getHeight)
+        canvas.ellipse(getWidth / 2, getHeight / 2, getWidth, getHeight)
     }
 }
+
+class SpriteRenderer(ge: GameEntity, imgFile: String) extends Renderer {
+    val img = image(imgFile)
+    ge.setSize(img.getWidth, img.getHeight)
+    def timeStep(dt: Float): Unit = {}
+    def draw(canvas: CanvasDraw): Unit = {
+        import ge._
+        canvas.image(img, 0, 0)
+    }
+}
+
 
 // game object or entity or node
 abstract class GameEntity(x0: Float, y0: Float) {
