@@ -3,7 +3,9 @@
 // The idea with this is to provide
 // a smooth path from gaming within Kojo to libGDX based gaming
 
-case class Point(x: Float, y: Float)
+case class Point(x: Float, y: Float) {
+    def -(other: Point) = Point(x - other.x, y - other.y)
+}
 case class Rectangle(x: Float, y: Float, width: Float, height: Float) {
     def overlaps(r: Rectangle): Boolean = {
         x < r.x + r.width && x + width > r.x &&
@@ -66,6 +68,14 @@ class Vector2(x0: Float, y0: Float) {
     def add(dx: Float, dy: Float): Unit = {
         x += dx
         y += dy
+    }
+
+    def nor(): Unit = {
+        val length = len;
+        if (length != 0) {
+            x /= length;
+            y /= length;
+        }
     }
     override def toString = s"Vector2($x, $y)"
 }
