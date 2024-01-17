@@ -406,6 +406,8 @@ class Collider(ge: GameEntity) {
 }
 
 class PositioningCapability(ge: GameEntity) {
+    ge.addComponent(this)
+
     def centerAtPosition(x: Float, y: Float): Unit = {
         ge.setPosition(x - ge.getWidth / 2, y - ge.getHeight / 2)
     }
