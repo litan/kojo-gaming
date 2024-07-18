@@ -18,13 +18,15 @@ case class Rectangle(x: Float, y: Float, width: Float, height: Float) {
 class Vector2(x0: Float, y0: Float) {
     var x = x0
     var y = y0
-    def set(nx: Float, ny: Float): Unit = {
+    def set(nx: Float, ny: Float): Vector2 = {
         x = nx
         y = ny
+        this
     }
-    def scl(scalar: Float): Unit = {
+    def scl(scalar: Float): Vector2 = {
         x *= scalar
         y *= scalar
+        this
     }
     def len = math.sqrt(x * x + y * y).toFloat
     def len2 = x * x + y * y
