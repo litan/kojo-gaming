@@ -8,6 +8,7 @@ import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.Screen
 
 abstract class GdxScreen extends Screen with InputProcessor {
+  var paused = false
   WorldBounds.set(Gdx.graphics.getWidth, Gdx.graphics.getHeight)
   val stage = new GdxStage()
   private val uiStage = new GdxStage()
@@ -18,24 +19,30 @@ abstract class GdxScreen extends Screen with InputProcessor {
   def update(dt: Float): Unit
 
   override def render(dt: Float): Unit = {
-    uiStage.act(dt)
-    stage.act(dt)
+    if (!paused) {
+      uiStage.act(dt)
+      stage.act(dt)
 
-    update(dt)
+      update(dt)
 
-    Gdx.gl.glClearColor(0, 0, 0, 1)
-    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+      Gdx.gl.glClearColor(0, 0, 0, 1)
+      Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
-    stage.draw()
-    uiStage.draw()
+      stage.draw()
+      uiStage.draw()
+    }
   }
 
   // methods required by Screen interface
   override def resize(width: Int, height: Int): Unit = {}
 
-  override def pause(): Unit = {}
+  override def pause(): Unit = {
+    paused = true
+  }
 
-  override def resume(): Unit = {}
+  override def resume(): Unit = {
+    paused = false
+  }
 
   override def dispose(): Unit = {}
 
