@@ -6,7 +6,7 @@ import net.kogics.kojo.example.Constants.speedup
 import net.kogics.kojo.gaming._
 
 object Constants {
-  val speedup = 3
+  val speedup = 3f
 }
 
 class Main extends GdxGame {
@@ -31,7 +31,7 @@ class Player(x0: Float, y0: Float) extends GameEntity(x0, y0) {
 
   val wb = new WorldBoundsCapability(this)
 
-  def update(dt: Float) {
+  def update(dt: Float): Unit = {
     if (Gdx.input.isKeyPressed(Keys.SPACE)) {
       physics.addAcceleration(200, 180)
     }
@@ -55,7 +55,7 @@ class Rock(x0: Float, y0: Float) extends GameEntity(x0, y0) {
 
   val wb = new WorldBoundsCapability(this)
 
-  def update(dt: Float) {
+  def update(dt: Float): Unit = {
     physics.timeStep(dt)
     wb.bounceOff()
   }
@@ -68,7 +68,7 @@ class GameScreen extends GdxScreen {
   val rock = new Rock(WorldBounds.width / 2 - 100, WorldBounds.height / 2 - 100)
   stage.addEntity(rock)
 
-  def update(dt: Float) {
+  def update(dt: Float): Unit = {
     val pCollider = player.getComponent(classOf[Collider])
     val rCollider = rock.getComponent(classOf[Collider])
 //    if (pCollider.collidesWith(rCollider)) {

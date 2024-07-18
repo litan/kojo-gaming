@@ -67,13 +67,13 @@ class MessageScreen(game: GdxGame, message: String, color: Color) extends GdxScr
 class PlayScreen(game: GdxGame) extends GdxScreen {
     val carColliders = HashSet.empty[(OtherCar, Collider)]
     def spawnCar() {
-        val car = new OtherCar(player.getX + randomDouble(-20, 20).toFloat, cheight)
+        val car = new OtherCar(player.getX + randomDouble(-20, 20).toFloat, WorldBounds.height)
         stage.addEntity(car)
         val oc = car.getComponent(classOf[Collider])
         carColliders.add(car, oc)
     }
 
-    val player = new PlayerCar(cwidth / 2 - 25, cheight / 2 - 25)
+    val player = new PlayerCar(WorldBounds.width / 2 - 25, WorldBounds.height / 2 - 25)
     stage.addEntity(player)
 
     val pc = player.getComponent(classOf[Collider])
