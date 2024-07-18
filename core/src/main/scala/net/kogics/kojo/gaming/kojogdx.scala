@@ -284,7 +284,7 @@ class PhysicsBehavior(ge: GameEntity) extends Behavior {
 
 // Capability Components
 
-class Collider(ge: GameEntity) {
+class Collider(val ge: GameEntity) {
   ge.addComponent(this)
   private var bPoly: Polygon = _
   setBoundaryRectangle()
@@ -292,7 +292,7 @@ class Collider(ge: GameEntity) {
   def setBoundaryRectangle(): Unit = {
     val w = ge.getWidth
     val h = ge.getHeight
-    val vertices = scala.Array(0, 0, w, 0, w, h, 0, h)
+    val vertices = Array(0, 0, w, 0, w, h, 0, h)
     setBoundaryPolygon(vertices)
   }
 
@@ -364,6 +364,35 @@ class Collider(ge: GameEntity) {
     }
     else {
       false
+    }
+  }
+
+  val incident = new Vector2()
+  val normal = new Vector2()
+  private def doBounce(ge: GameEntity, mtv: Vector2, other: Boolean): Unit = {
+    val p = ge.getComponent(classOf[PhysicsBehavior])
+    incident.set(p.velocity)
+    val n = mtv.nor()
+    if (other) {
+      normal.set(-n.x, -n.y)
+    } else {
+      normal.set(n)
+    }
+    val dot = incident.dot(normal)
+    val reflection = incident.sub(normal.scl(2 * dot))
+    p.setVelocity(reflection.x, reflection.y)
+  }
+
+  def bounceOff(other: Collider): Unit = {
+    avoidOverlap(other).foreach { mtv =>
+      doBounce(ge, mtv, false)
+    }
+  }
+
+  def bounceBothOff(other: Collider): Unit = {
+    avoidOverlap(other).foreach { mtv =>
+      doBounce(ge, mtv, false)
+      doBounce(other.ge, mtv, true)
     }
   }
 }
@@ -449,9 +478,9 @@ class WorldBoundsCapability(ge: GameEntity) {
   def isOutside: Boolean = {
     import ge._
     (getX + getWidth < 0) ||
-      (getX > boundsRect.width) ||
-      (getY + getHeight < 0) ||
-      (getY > boundsRect.height)
+    (getX > boundsRect.width) ||
+    (getY + getHeight < 0) ||
+    (getY > boundsRect.height)
   }
 }
 
@@ -495,6 +524,10 @@ abstract class GameEntity(x: Float, y: Float) extends Group {
 
   def getComponent[T](cls: Class[T]): T = {
     components(cls.getName).asInstanceOf[T]
+  }
+
+  def getComponentOption[T](cls: Class[T]): Option[T] = {
+    components.get(cls.getName).asInstanceOf[Option[T]]
   }
 
   def addChild(ge: Actor): Unit = {
