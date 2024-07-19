@@ -371,20 +371,20 @@ class Collider(val ge: GameEntity) {
   val normal = new Vector2()
 
   private def doBounce(p: PhysicsBehavior, mtv: Vector2, other: Boolean, sameDirection: Boolean): Unit = {
-    incident.set(p.velocity)
-    val n = mtv.nor()
-    if (other) {
-      normal.set(-n.x, -n.y)
-    }
-    else {
-      normal.set(n)
-    }
-    val dot = incident.dot(normal)
-    val reflection = incident.sub(normal.scl(2 * dot))
     if (other && sameDirection) {
-      p.setVelocity(-reflection.x, -reflection.y)
+      p.velocity.scl(1.2f)
     }
     else {
+      incident.set(p.velocity)
+      val n = mtv.nor()
+      if (other) {
+        normal.set(-n.x, -n.y)
+      }
+      else {
+        normal.set(n)
+      }
+      val dot = incident.dot(normal)
+      val reflection = incident.sub(normal.scl(2 * dot))
       p.setVelocity(reflection.x, reflection.y)
     }
   }

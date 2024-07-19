@@ -26,14 +26,13 @@ class Player(x0: Float, y0: Float) extends GameEntity(x0, y0) {
   )
   val physics = new PhysicsBehavior(this)
   physics.setMaxSpeed(500)
-  physics.setFrictionMagnitude(10)
-  physics.setVelocity(50 * speedup, 20 * speedup)
+  physics.setVelocity(50 * speedup, 0 * speedup)
 
   val wb = new WorldBoundsCapability(this)
 
   def update(dt: Float): Unit = {
     if (Gdx.input.isKeyPressed(Keys.SPACE)) {
-      physics.addAcceleration(200, 180)
+      physics.addAcceleration(200, 135)
     }
     physics.timeStep(dt)
     wb.bounceOff()
@@ -50,8 +49,7 @@ class Rock(x0: Float, y0: Float) extends GameEntity(x0, y0) {
   )
   val physics = new PhysicsBehavior(this)
   physics.setMaxSpeed(500)
-  physics.setFrictionMagnitude(10)
-  physics.setVelocity(-50 * speedup, 20 * speedup)
+  physics.setVelocity(20 * speedup, 0 * speedup)
 
   val wb = new WorldBoundsCapability(this)
 
@@ -62,10 +60,10 @@ class Rock(x0: Float, y0: Float) extends GameEntity(x0, y0) {
 }
 
 class GameScreen extends GdxScreen {
-  val player = new Player(WorldBounds.width / 2, WorldBounds.height / 2 - 50)
+  val player = new Player(WorldBounds.width / 2 - 200, WorldBounds.height / 2)
   stage.addEntity(player)
 
-  val rock = new Rock(WorldBounds.width / 2 - 100, WorldBounds.height / 2 - 100)
+  val rock = new Rock(WorldBounds.width / 2 - 100, WorldBounds.height / 2)
   stage.addEntity(rock)
 
   def update(dt: Float): Unit = {
