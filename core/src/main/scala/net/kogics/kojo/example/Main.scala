@@ -31,8 +31,17 @@ class Player(x0: Float, y0: Float) extends GameEntity(x0, y0) {
   val wb = new WorldBoundsCapability(this)
 
   def update(dt: Float): Unit = {
-    if (Gdx.input.isKeyPressed(Keys.SPACE)) {
-      physics.addAcceleration(200, 135)
+    if (Gdx.input.isKeyPressed(Keys.UP)) {
+      physics.addAcceleration(200)
+    }
+    if (Gdx.input.isKeyPressed(Keys.DOWN)) {
+      physics.addAcceleration(200, getRotation + 180)
+    }
+    if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
+      rotateBy(-3)
+    }
+    if (Gdx.input.isKeyPressed(Keys.LEFT)) {
+      rotateBy(3)
     }
     physics.timeStep(dt)
     wb.bounceOff()
@@ -52,6 +61,7 @@ class Rock(x0: Float, y0: Float) extends GameEntity(x0, y0) {
   physics.setVelocity(20 * speedup, 0 * speedup)
 
   val wb = new WorldBoundsCapability(this)
+  setRotation(-50f)
 
   def update(dt: Float): Unit = {
     physics.timeStep(dt)
@@ -60,7 +70,7 @@ class Rock(x0: Float, y0: Float) extends GameEntity(x0, y0) {
 }
 
 class GameScreen extends GdxScreen {
-  val player = new Player(WorldBounds.width / 2 - 200, WorldBounds.height / 2)
+  val player = new Player(WorldBounds.width / 2 - 300, WorldBounds.height / 2 - 10)
   stage.addEntity(player)
 
   val rock = new Rock(WorldBounds.width / 2 - 100, WorldBounds.height / 2)
