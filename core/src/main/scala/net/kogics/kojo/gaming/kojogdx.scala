@@ -93,6 +93,11 @@ trait Renderer extends Behavior {
   def draw(batch: Batch, parentAlpha: Float): Unit
 }
 
+class NoOpRenderer extends Renderer {
+  def draw(batch: Batch, parentAlpha: Float): Unit = {}
+  def timeStep(dt: Float): Unit = {}
+}
+
 class SpriteRenderer(ge: GameEntity, fileName: String) extends Renderer {
   private val textureRegion: TextureRegion = TextureUtils.loadTexture(fileName)
   init()
