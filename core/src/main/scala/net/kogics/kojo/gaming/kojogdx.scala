@@ -239,6 +239,10 @@ class PhysicsBehavior(ge: GameEntity) extends Behavior {
 
   def velocity: Vector2 = currVelocity
 
+  def setVelocity(vel: Vector2): Unit = {
+    currVelocity.set(vel)
+  }
+
   def setVelocity(vx: Float, vy: Float): Unit = {
     currVelocity.set(vx, vy)
   }
@@ -258,15 +262,27 @@ class PhysicsBehavior(ge: GameEntity) extends Behavior {
     currVelocity.add(vel.x, vel.y)
   }
 
-  def addAcceleration(acc: Vector2): Unit = {
+  def scaleVelocity(factor: Float): Unit = {
+    currVelocity.scl(factor)
+  }
+
+  def applyAcceleration(ax: Float, ay: Float): Unit = {
+    accumulatedAcceleration.add(ax, ay)
+  }
+
+  def addAcceleration(acc: Vector2): Unit = applyAcceleration(acc)
+  def applyAcceleration(acc: Vector2): Unit = {
     accumulatedAcceleration.add(acc)
   }
 
-  def addAcceleration(magnitude: Float, angle: Float): Unit = {
-    accumulatedAcceleration.add(new Vector2(magnitude, 0).setAngleDeg(angle))
+  val workVec = new Vector2(100, 100)
+  def addAcceleration(magnitude: Float, direction: Float): Unit = applyAccelerationMagDir(magnitude, direction)
+  def applyAccelerationMagDir(magnitude: Float, direction: Float): Unit = {
+    accumulatedAcceleration.add(workVec.setLength(magnitude).setAngleDeg(direction))
   }
 
-  def addAcceleration(magnitude: Float): Unit = {
+  def addAcceleration(magnitude: Float): Unit = applyAccelerationMag(magnitude)
+  def applyAccelerationMag(magnitude: Float): Unit = {
     addAcceleration(magnitude, ge.getRotation)
   }
 
@@ -282,7 +298,8 @@ class PhysicsBehavior(ge: GameEntity) extends Behavior {
     accumulatedAcceleration.set(0, 0)
   }
 
-  def addGravityAcceleration(g: Float): Unit = {
+  def addGravityAcceleration(g: Float): Unit = applyGravityAcceleration(g)
+  def applyGravityAcceleration(g: Float): Unit = {
     accumulatedAcceleration.add(new Vector2(g, 0).setAngleDeg(270))
   }
 }
