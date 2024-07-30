@@ -62,4 +62,19 @@ object KojoUtils {
   def isKeyPressed(key: Int): Boolean = {
     Gdx.input.isKeyPressed(key)
   }
+
+  def repeat(n: Int)(fn: => Unit): Unit = {
+    var i = 0
+    while (i < n) {
+      fn
+      i += 1
+    }
+  }
+
+  def repeatFor[T](seq: Iterable[T])(fn: T => Unit): Unit = {
+    val iter = seq.iterator
+    while (iter.hasNext) {
+      fn(iter.next())
+    }
+  }
 }
