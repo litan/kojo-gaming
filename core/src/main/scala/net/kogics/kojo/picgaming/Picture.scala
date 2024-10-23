@@ -2,6 +2,9 @@ package net.kogics.kojo.picgaming
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.math.Intersector
+import com.badlogic.gdx.math.Polygon
+import com.badlogic.gdx.utils.FloatArray
 
 object Picture {
   def rectangle(w: Double, h: Double): VectorPicture = new RectPicture(w, h)
@@ -13,6 +16,7 @@ trait Picture {
   protected var rotation = 0.0 // radians
   protected var scaleX = 1.0
   protected var scaleY = 1.0
+  def boundaryPolygon: Polygon
 
   def draw(): Unit = {
     PicGdxScreen.stage.addPicture(this)
@@ -26,8 +30,11 @@ trait Picture {
     y += dy
   }
 
-  def collidesWith(other: Picture): Unit = {
-
+  def collidesWith(other: Picture): Boolean = {
+    Intersector.intersectPolygonEdges(
+      new FloatArray(boundaryPolygon.getTransformedVertices),
+      new FloatArray(other.boundaryPolygon.getTransformedVertices)
+    )
   }
 }
 
@@ -69,6 +76,10 @@ trait VectorPicture extends Picture {
 }
 
 class RectPicture(w: Double, h: Double) extends VectorPicture {
+  lazy val bPoly = {
+    val vertices = Array(0f, 0f, w.toFloat, 0, w.toFloat, h.toFloat, 0, h.toFloat)
+    new Polygon(vertices)
+  }
   def realDrawOutlined(shapeRenderer: ShapeRenderer): Unit = {
     shapeRenderer.setColor(penColor)
     shapeRenderer.rect(x.toFloat, y.toFloat, w.toFloat, h.toFloat)
@@ -76,5 +87,13 @@ class RectPicture(w: Double, h: Double) extends VectorPicture {
   def realDrawFilled(shapeRenderer: ShapeRenderer): Unit = {
     shapeRenderer.setColor(fillColor)
     shapeRenderer.rect(x.toFloat, y.toFloat, w.toFloat, h.toFloat)
+  }
+
+  def boundaryPolygon: Polygon = {
+    bPoly.setPosition(x.toFloat, y.toFloat)
+//    bPoly.setOrigin(getOriginX, getOriginY)
+//    bPoly.setRotation(getRotation)
+//    bPoly.setScale(getScaleX, getScaleY)
+    bPoly
   }
 }
