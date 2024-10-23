@@ -10,6 +10,8 @@ object Picture {
   def rectangle(w: Double, h: Double): VectorPicture = new RectPicture(w, h)
 }
 
+case class Point(x: Double, y: Double)
+
 trait Picture {
   protected var x = 0.0
   protected var y = 0.0
@@ -25,6 +27,8 @@ trait Picture {
     x = x0
     y = y0
   }
+
+  def position: Point = Point(x, y)
   def translate(dx: Double, dy: Double): Unit = {
     x += dx
     y += dy
