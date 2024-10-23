@@ -17,13 +17,14 @@ class Main extends GdxGame {
 }
 
 class Player(x0: Float, y0: Float) extends GameEntity(x0, y0) {
-  val renderer = new SpriteRenderer(this, "blue-pentagon.png")
+  val renderer = new SpriteRenderer(this, "blue-sq.png")
   val collider = new Collider(this)
 //  collider.setBoundaryPolygon(Array(30.0f, 1.0f, 7.0f, 2.0f, -1.0f, 27.0f, -1.0f, 38.0f, 8.0f, 63.0f, 27.0f, 63.0f, 47.0f, 37.0f, 47.0f, 28.0f))
-  collider.setBoundaryPolygon(
-    Array(0.69503317177944f, 12.332247706143217f, 0.9846975515161277f, 52.305932109806115f, 39.2203956767589f,
-      65.05116481822037f, 62.683210435430595f, 33.47774742692142f, 38.06173815781215f, 0.7456725166757117f)
-  )
+//  collider.setBoundaryPolygon(
+//    Array(0.69503317177944f, 12.332247706143217f, 0.9846975515161277f, 52.305932109806115f, 39.2203956767589f,
+//      65.05116481822037f, 62.683210435430595f, 33.47774742692142f, 38.06173815781215f, 0.7456725166757117f)
+//  )
+  collider.setBoundaryPolygon(Array(0f, 0f, 0f, 64f, 64f, 64f, 64f, 0f))
   val physics = new PhysicsBehavior(this)
   physics.setMaxSpeed(500)
   physics.setVelocity(50 * speedup, 0 * speedup)
@@ -49,19 +50,20 @@ class Player(x0: Float, y0: Float) extends GameEntity(x0, y0) {
 }
 
 class Rock(x0: Float, y0: Float) extends GameEntity(x0, y0) {
-  val renderer = new SpriteRenderer(this, "green-pentagon.png")
+  val renderer = new SpriteRenderer(this, "green-sq.png")
   val collider = new Collider(this)
 //  collider.setBoundaryPolygon(Array(25.0f, 1.0f, 13.0f, 1.0f, 0.0f, 16.0f, 5.0f, 84.0f, 15.0f, 98.0f, 33.0f, 98.0f, 48.0f, 84.0f, 49.0f, 18.0f, 39.0f, 3.0f))
-  collider.setBoundaryPolygon(
-    Array(0.69503317177944f, 12.332247706143217f, 0.9846975515161277f, 52.305932109806115f, 39.2203956767589f,
-      65.05116481822037f, 62.683210435430595f, 33.47774742692142f, 38.06173815781215f, 0.7456725166757117f)
-  )
+//  collider.setBoundaryPolygon(
+//    Array(0.69503317177944f, 12.332247706143217f, 0.9846975515161277f, 52.305932109806115f, 39.2203956767589f,
+//      65.05116481822037f, 62.683210435430595f, 33.47774742692142f, 38.06173815781215f, 0.7456725166757117f)
+//  )
+  collider.setBoundaryPolygon(Array(0f, 0f, 0f, 64f, 64f, 64f, 64f, 0f))
   val physics = new PhysicsBehavior(this)
   physics.setMaxSpeed(500)
-  physics.setVelocity(20 * speedup, 0 * speedup)
+  physics.setVelocity(10 * speedup, 0 * speedup)
 
   val wb = new WorldBoundsCapability(this)
-  setRotation(-50f)
+//  setRotation(-50f)
 
   def update(dt: Float): Unit = {
     physics.timeStep(dt)
@@ -70,10 +72,10 @@ class Rock(x0: Float, y0: Float) extends GameEntity(x0, y0) {
 }
 
 class GameScreen extends GdxScreen {
-  val player = new Player(WorldBounds.width / 2 - 300, WorldBounds.height / 2 - 10)
+  val player = new Player(WorldBounds.width / 2 - 300, WorldBounds.height / 2)
   stage.addEntity(player)
 
-  val rock = new Rock(WorldBounds.width / 2 - 100, WorldBounds.height / 2)
+  val rock = new Rock(WorldBounds.width / 2 + 300 - 70, WorldBounds.height / 2)
   stage.addEntity(rock)
 
   def update(dt: Float): Unit = {
@@ -82,6 +84,7 @@ class GameScreen extends GdxScreen {
 //    if (pCollider.collidesWith(rCollider)) {
 //      pause()
 //    }
+//    pCollider.bounceOff(rCollider)
     pCollider.bounceBothOff(rCollider)
   }
 }

@@ -392,39 +392,30 @@ class Collider(val ge: GameEntity) {
   val incident = new Vector2()
   val normal = new Vector2()
 
-  private def doBounce(p: PhysicsBehavior, mtv: Vector2, other: Boolean, sameDirection: Boolean): Unit = {
-    if (other && sameDirection) {
-      p.velocity.scl(1.2f)
-    }
-    else {
-      incident.set(p.velocity)
-      val n = mtv.nor()
-      if (other) {
-        normal.set(-n.x, -n.y)
-      }
-      else {
-        normal.set(n)
-      }
-      val dot = incident.dot(normal)
-      val reflection = incident.sub(normal.scl(2 * dot))
-      p.setVelocity(reflection.x, reflection.y)
-    }
-  }
-
   def bounceOff(other: Collider): Unit = {
-    avoidOverlap(other).foreach { mtv =>
+    avoidOverlap(other).foreach { mtvNormal =>
       val p = ge.getComponent(classOf[PhysicsBehavior])
-      doBounce(p, mtv, false, false)
+      incident.set(p.velocity)
+      normal.set(mtvNormal)
+      val velAlongNormal = incident.dot(normal)
+      val impulse = normal.scl(velAlongNormal * 2)
+      val reflection = incident.sub(impulse)
+      p.velocity.set(reflection)
     }
   }
 
   def bounceBothOff(other: Collider): Unit = {
-    avoidOverlap(other).foreach { mtv =>
+    avoidOverlap(other).foreach { mtvNormal =>
+      val restitution = 1f
       val p1 = ge.getComponent(classOf[PhysicsBehavior])
       val p2 = other.ge.getComponent(classOf[PhysicsBehavior])
-      val sameDirection = p1.velocity.dot(p2.velocity) > 0
-      doBounce(p1, mtv, false, sameDirection)
-      doBounce(p2, mtv, true, sameDirection)
+      incident.set(p1.velocity)
+      normal.set(mtvNormal)
+      val relativeVelocity = incident.sub(p2.velocity)
+      val relativeVelAlongNormal = relativeVelocity.dot(mtvNormal)
+      val impulse = normal.scl(relativeVelAlongNormal * restitution)
+      p1.velocity.sub(impulse)
+      p2.velocity.add(impulse)
     }
   }
 }
