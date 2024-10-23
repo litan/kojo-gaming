@@ -31,11 +31,19 @@ trait Picture {
   }
 
   def collidesWith(other: Picture): Boolean = {
+    if (other == Builtins.stageBorder)
+      collidesWithStage()
+    else
+      Intersector.overlapConvexPolygons(boundaryPolygon, other.boundaryPolygon)
+  }
+
+  def collidesWithStage(): Boolean = {
     Intersector.intersectPolygonEdges(
       new FloatArray(boundaryPolygon.getTransformedVertices),
-      new FloatArray(other.boundaryPolygon.getTransformedVertices)
+      new FloatArray(Builtins.stageBorder.boundaryPolygon.getTransformedVertices)
     )
   }
+
 }
 
 trait VectorPicture extends Picture {

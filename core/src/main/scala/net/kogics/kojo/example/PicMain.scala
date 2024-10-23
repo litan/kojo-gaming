@@ -45,12 +45,15 @@ class PicGameScreen extends PicGdxScreen {
     for (idx <- 0 until players.length - 1) {
       for (idx2 <- idx + 1 until players.length) {
         val player = players(idx)
-        var vel = velocities(idx)
+        val vel = velocities(idx)
         val player2 = players(idx2)
+        val vel2 = velocities(idx2)
         if (player.collidesWith(player2)) {
-          vel = bouncePicOffPic(player, vel, player2)
-          velocities(idx).set(vel)
-          velocities(idx2).set(-vel.x, -vel.y)
+//          val nvel = bouncePicOffPic(player, vel, player2)
+          val (nvel, nvel2) = bouncePicOffPicBoth(player, vel, player2, vel2)
+          velocities(idx).set(nvel)
+//          velocities(idx2).set(-nvel.x, -nvel.y)
+          velocities(idx2).set(nvel2)
         }
       }
     }
