@@ -6,6 +6,11 @@ import net.kogics.kojo.gaming.WorldBounds
 
 object Builtins {
   var stageBorder: VectorPicture = _
+  var stageBot: VectorPicture = _
+  var stageTop: VectorPicture = _
+  var stageLeft: VectorPicture = _
+  var stageRight: VectorPicture = _
+
   val bottomLeft = new Vector2(-WorldBounds.width / 2, -WorldBounds.height / 2)
   val topLeft = new Vector2(-WorldBounds.width / 2, WorldBounds.height / 2)
   val topRight = new Vector2(WorldBounds.width / 2, WorldBounds.height / 2)
@@ -15,8 +20,21 @@ object Builtins {
     stageBorder = Picture.rectangle(WorldBounds.width, WorldBounds.height)
     stageBorder.setFillColor(color)
     stageBorder.setPenColor(null)
-    stageBorder.setPosition(-WorldBounds.width / 2, -WorldBounds.height / 2)
+    stageBorder.setPosition(bottomLeft.x, bottomLeft.y)
     stageBorder.draw()
+
+    // the 0 width/height of these rects can be made 1e-6 or something if 0 causes a problem
+    stageBot = Picture.rectangle(WorldBounds.width, 0)
+    stageBot.setPosition(bottomLeft.x, bottomLeft.y)
+
+    stageTop = Picture.rectangle(WorldBounds.width, 0)
+    stageTop.setPosition(topLeft.x, topLeft.y)
+
+    stageLeft = Picture.rectangle(0, WorldBounds.height)
+    stageLeft.setPosition(bottomLeft.x, bottomLeft.y)
+
+    stageRight = Picture.rectangle(0, WorldBounds.height)
+    stageRight.setPosition(bottomRight.x, bottomRight.y)
   }
 
   def avoidOverlap(p1: Picture, vel: Vector2, p2: Picture): Option[Vector2] = {
