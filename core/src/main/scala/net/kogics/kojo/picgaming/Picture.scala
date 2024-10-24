@@ -5,12 +5,11 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Intersector
 import com.badlogic.gdx.math.Polygon
 import com.badlogic.gdx.utils.FloatArray
+import net.kogics.kojo.core.Point
 
 object Picture {
   def rectangle(w: Double, h: Double): VectorPicture = new RectPicture(w, h)
 }
-
-case class Point(x: Double, y: Double)
 
 trait Picture {
   protected var x = 0.0
