@@ -1,12 +1,11 @@
 package net.kogics.kojo.example
 
-import java.awt.Color
-
-import com.badlogic.gdx.math.Vector2
 import net.kogics.kojo.gaming.GdxGame
 import net.kogics.kojo.picgaming.Builtins._
-import net.kogics.kojo.picgaming.PicGdxScreen
-import net.kogics.kojo.picgaming.Picture
+import net.kogics.kojo.picgaming.{PicGdxScreen, Picture}
+import net.kogics.kojo.util.Vector2D
+
+import java.awt.Color
 
 class PicMain extends GdxGame {
   override def create(): Unit = {
@@ -26,7 +25,7 @@ class PicGameScreen extends PicGdxScreen {
     player
   }
 
-  val velocities = for (i <- 1 to n) yield new Vector2(2, 1)
+  val velocities = (for (i <- 1 to n) yield Vector2D(2, 1)).toBuffer
 
   for (player <- players) player.draw()
 
@@ -38,7 +37,7 @@ class PicGameScreen extends PicGdxScreen {
       player.translate(vel.x, vel.y)
       if (player.collidesWith(stageBorder)) {
         vel = bouncePicOffPic(player, vel, stageBorder)
-        velocities(idx).set(vel)
+        velocities(idx) = vel
       }
     }
 
@@ -51,9 +50,9 @@ class PicGameScreen extends PicGdxScreen {
         if (player.collidesWith(player2)) {
 //          val nvel = bouncePicOffPic(player, vel, player2)
           val (nvel, nvel2) = bouncePicOffPicBoth(player, vel, player2, vel2)
-          velocities(idx).set(nvel)
+          velocities(idx) = nvel
 //          velocities(idx2).set(-nvel.x, -nvel.y)
-          velocities(idx2).set(nvel2)
+          velocities(idx2) = nvel2
         }
       }
     }

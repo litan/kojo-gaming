@@ -1,8 +1,32 @@
+plugins {
+  id 'de.undercouch.download' version '5.5.0'  // Add this at the top with your other plugins
+}
+
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 eclipse.project.name = appName + '-core'
+
+def kojoLibVersion = "0.3.0"
+def libsDir = new File(project.rootDir, "cachedLibs")
+
+task downloadKojoLib(type: Download) {
+  doFirst {
+    libsDir.mkdirs()
+  }
+
+  src "https://github.com/litan/kojo-lib/releases/download/v${kojoLibVersion}/kojo-lib-assembly-${kojoLibVersion}.jar"
+  dest new File(libsDir, "kojo-lib-assembly-${kojoLibVersion}.jar")
+
+  // Only download if the file doesn't exist
+  onlyIf { !dest.exists() }
+
+  // Enable Gradle's build cache
+  outputs.file(dest)
+  outputs.cacheIf { true }
+}
 
 dependencies {
   api "com.badlogicgames.gdx:gdx:$gdxVersion"
   api "org.scala-lang:scala-library:$scalaVersion"
   implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+  implementation files(downloadKojoLib)
 }

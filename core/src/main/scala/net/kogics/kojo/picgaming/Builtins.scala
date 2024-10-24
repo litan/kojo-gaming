@@ -3,6 +3,7 @@ package net.kogics.kojo.picgaming
 import com.badlogic.gdx.math.Intersector
 import com.badlogic.gdx.math.Vector2
 import net.kogics.kojo.gaming.WorldBounds
+import net.kogics.kojo.util.Vector2D
 
 object Builtins {
   var stageBorder: VectorPicture = _
@@ -11,10 +12,10 @@ object Builtins {
   var stageLeft: VectorPicture = _
   var stageRight: VectorPicture = _
 
-  val bottomLeft = new Vector2(-WorldBounds.width / 2, -WorldBounds.height / 2)
-  val topLeft = new Vector2(-WorldBounds.width / 2, WorldBounds.height / 2)
-  val topRight = new Vector2(WorldBounds.width / 2, WorldBounds.height / 2)
-  val bottomRight = new Vector2(WorldBounds.width / 2, -WorldBounds.height / 2)
+  private val bottomLeft = new Vector2(-WorldBounds.width / 2, -WorldBounds.height / 2)
+  private val topLeft = new Vector2(-WorldBounds.width / 2, WorldBounds.height / 2)
+  private val topRight = new Vector2(WorldBounds.width / 2, WorldBounds.height / 2)
+  private val bottomRight = new Vector2(WorldBounds.width / 2, -WorldBounds.height / 2)
 
   def drawStage(color: java.awt.Color): Unit = {
     stageBorder = Picture.rectangle(WorldBounds.width, WorldBounds.height)
@@ -37,7 +38,7 @@ object Builtins {
     stageRight.setPosition(bottomRight.x, bottomRight.y)
   }
 
-  def avoidOverlap(p1: Picture, vel: Vector2, p2: Picture): Option[Vector2] = {
+  private def avoidOverlap(p1: Picture, p2: Picture): Option[Vector2] = {
     val poly1 = p1.boundaryPolygon
     val poly2 = p2.boundaryPolygon
     if (poly1.getBoundingRectangle.overlaps(poly2.getBoundingRectangle)) {
@@ -56,12 +57,9 @@ object Builtins {
     }
   }
 
-  private val incident = new Vector2()
-  private val normal = new Vector2()
-
-  def bouncePicOffStage(p: Picture, vel: Vector2): Vector2 = {
+  def bouncePicOffStage(p: Picture, vel: Vector2D): Vector2D = {
     val bPoly = p.boundaryPolygon
-    val nvel = new Vector2(vel)
+    val nvel = new Vector2(vel.x.toFloat, vel.y.toFloat)
     if (Intersector.intersectSegmentPolygon(bottomRight, topRight, bPoly)) {
       nvel.set(-nvel.x, nvel.y)
     }
@@ -74,19 +72,22 @@ object Builtins {
     if (Intersector.intersectSegmentPolygon(bottomLeft, bottomRight, bPoly)) {
       nvel.set(nvel.x, -nvel.y)
     }
-    nvel
+    Vector2D(nvel.x, nvel.y)
   }
 
-  def bouncePicOffPic(p1: Picture, vel: Vector2, p2: Picture): Vector2 = {
+  private val incident = new Vector2()
+  private val normal = new Vector2()
+
+  def bouncePicOffPic(p1: Picture, vel: Vector2D, p2: Picture): Vector2D = {
     if (p2 == stageBorder) bouncePicOffStage(p1, vel)
     else {
-      avoidOverlap(p1, vel, p2).map { mtvNormal =>
-        incident.set(vel)
+      avoidOverlap(p1, p2).map { mtvNormal =>
+        incident.set(vel.x.toFloat, vel.y.toFloat)
         normal.set(mtvNormal)
         val velAlongNormal = incident.dot(normal)
         val impulse = normal.scl(velAlongNormal * 2)
         val reflection = incident.sub(impulse)
-        reflection.cpy()
+        Vector2D(reflection.x, reflection.y)
       } match {
         case Some(newVel) => newVel
         case None         => vel
@@ -94,17 +95,17 @@ object Builtins {
     }
   }
 
-  def bouncePicOffPicBoth(p1: Picture, vel: Vector2, p2: Picture, vel2: Vector2): (Vector2, Vector2) = {
-    avoidOverlap(p1, vel, p2).map { mtvNormal =>
+  def bouncePicOffPicBoth(p1: Picture, vel: Vector2D, p2: Picture, vel2: Vector2D): (Vector2D, Vector2D) = {
+    avoidOverlap(p1, p2).map { mtvNormal =>
       val restitution = 1f
-      incident.set(vel)
+      incident.set(vel.x.toFloat, vel.y.toFloat)
       normal.set(mtvNormal)
-      val relativeVelocity = incident.sub(vel2)
+      val relativeVelocity = incident.sub(vel2.x.toFloat, vel2.y.toFloat)
       val relativeVelAlongNormal = relativeVelocity.dot(mtvNormal)
       val impulse = normal.scl(relativeVelAlongNormal * restitution)
-      impulse
+      Vector2D(impulse.x, impulse.y)
     } match {
-      case Some(impulse) => (vel.cpy().sub(impulse), vel2.cpy().add(impulse))
+      case Some(impulse) => (vel - impulse, vel2 + impulse)
       case None          => (vel, vel2)
     }
   }
