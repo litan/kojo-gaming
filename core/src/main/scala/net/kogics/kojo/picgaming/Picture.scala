@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Intersector
 import com.badlogic.gdx.math.Polygon
 import com.badlogic.gdx.utils.FloatArray
 import net.kogics.kojo.core.Point
+import net.kogics.kojo.util.Vector2D
 
 object Picture {
   def rectangle(w: Double, h: Double): VectorPicture = new RectPicture(w, h)
@@ -32,6 +33,7 @@ trait Picture {
     x += dx
     y += dy
   }
+  def translate(vel: Vector2D): Unit = translate(vel.x, vel.y)
 
   def collidesWith(other: Picture): Boolean = {
     if (other == Builtins.stageBorder)

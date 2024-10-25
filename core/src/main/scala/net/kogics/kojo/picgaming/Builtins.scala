@@ -1,8 +1,15 @@
 package net.kogics.kojo.picgaming
 
+import java.awt.Color
+
 import com.badlogic.gdx.math.Intersector
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.Gdx
+import net.kogics.kojo.doodle
 import net.kogics.kojo.gaming.WorldBounds
+import net.kogics.kojo.staging
+import net.kogics.kojo.staging.Rectangle
+import net.kogics.kojo.util.Utils
 import net.kogics.kojo.util.Vector2D
 
 object Builtins {
@@ -109,4 +116,39 @@ object Builtins {
       case None          => (vel, vel2)
     }
   }
+
+  val Kc = new KeyCodes
+
+//  def isKeyPressed(key: Int): Boolean = {
+//    Gdx.input.isKeyPressed(key)
+//  }
+
+  def cleari(): Unit = {}
+
+  val ColorMaker = doodle.Color
+  val cm = doodle.Color
+  implicit def rc2c(rc: doodle.Color): Color = rc.toAwt
+  implicit def c2rc(c: Color): doodle.Color = Utils.awtColorToDoodleColor(c)
+  implicit def rcSeq2cSeq(rcs: collection.Seq[doodle.Color]): collection.Seq[Color] = rcs.map(rc2c)
+
+  val noColor = staging.KColor.noColor
+
+  case class Bounds(x: Double, y: Double, width: Double, height: Double)
+  def canvasBounds = Bounds(bottomLeft.x, bottomLeft.y, WorldBounds.width, WorldBounds.height)
+  def stopAnimation(implicit screen: PicGdxScreen): Unit = {
+    screen.pause()
+  }
+
+  def drawCenteredMessage(message: String, color: Color = cm.black, fontSize: Int = 15): Unit = {}
+  def showGameTime(
+      limitSecs: Int,
+      endMsg: => String,
+      color: Color = cm.black,
+      fontSize: Int = 15,
+      dx: Double = 10,
+      dy: Double = 50,
+      countDown: Boolean = false
+  ): Unit = {}
+
+  def activateCanvas(): Unit = {}
 }

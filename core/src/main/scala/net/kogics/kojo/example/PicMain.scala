@@ -10,11 +10,11 @@ import java.awt.Color
 class PicMain extends GdxGame {
   override def create(): Unit = {
     super.create()
-    setScreen(new PicGameScreen())
+    setScreen(new PicMainScreen())
   }
 }
 
-class PicGameScreen extends PicGdxScreen {
+class PicMainScreen extends PicGdxScreen {
   drawStage(Color.blue)
   val n = 10
   val players = for (i <- 1 to n) yield {
