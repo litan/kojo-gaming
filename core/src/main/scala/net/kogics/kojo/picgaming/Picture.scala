@@ -3,6 +3,7 @@ package net.kogics.kojo.picgaming
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
@@ -11,6 +12,7 @@ import com.badlogic.gdx.math.Polygon
 import com.badlogic.gdx.utils.FloatArray
 import com.badlogic.gdx.Gdx
 import net.kogics.kojo.core.Point
+import net.kogics.kojo.gaming.TextureUtils
 import net.kogics.kojo.util.Vector2D
 
 object Picture {
@@ -28,6 +30,7 @@ object Picture {
   def rectangle(w: Double, h: Double): VectorPicture = new RectPicture(w, h)
   def text(msg: String, size: Int, color: java.awt.Color) =
     new TextPicture(msg, size, setGdxColorFromAwtColor(workColor, color))
+  def image(fileName: String) = new ImagePicture(fileName)
 }
 
 trait Picture {
@@ -142,11 +145,28 @@ class TextPicture(msg: String, size: Int, color: Color = Color.WHITE) extends Ra
   val bPoly = {
     val w = width
     val h = height
-    val vertices = Array(0f, 0f, w.toFloat, 0, w.toFloat, h.toFloat, 0, h.toFloat)
+    val vertices = Array(0f, 0f, w, 0, w, h, 0, h)
     new Polygon(vertices)
   }
 
-  def realDraw(batch: SpriteBatch): Unit = {
+  private[picgaming] def realDraw(batch: SpriteBatch): Unit = {
     font.draw(batch, msg, x.toFloat, y.toFloat)
+  }
+}
+
+class ImagePicture(fileName: String) extends RasterPicture {
+  private val textureRegion: TextureRegion = TextureUtils.loadTexture(fileName)
+  val width = textureRegion.getRegionWidth.toFloat
+  val height = textureRegion.getRegionHeight.toFloat
+
+  val bPoly = {
+    val w = width
+    val h = height
+    val vertices = Array(0f, 0f, w, 0, w, h, 0, h)
+    new Polygon(vertices)
+  }
+
+  private[picgaming] def realDraw(batch: SpriteBatch): Unit = {
+    batch.draw(textureRegion, x.toFloat, y.toFloat, width, height)
   }
 }

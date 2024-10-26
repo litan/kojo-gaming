@@ -19,23 +19,49 @@ class Hunted extends GdxGame {
 
 class HuntedScreen extends PicGdxScreen {
   cleari()
-  drawStage(cm.darkGreen)
+  drawStage(cm.black)
   val cb = canvasBounds
 
-  val player = Picture.rectangle(40, 40)
-  player.setFillColor(cm.yellow)
-  player.setPenColor(cm.black)
-  player.setPosition(cb.x + cb.width / 2, cb.y + 20)
+  val rectCharacters = false
+
+  def playerPic: Picture = {
+    val ret = if (rectCharacters) {
+      val pic = Picture.rectangle(40, 40)
+      pic.setFillColor(cm.yellow)
+      pic.setPenColor(cm.black)
+      pic
+    }
+    else {
+      val pic = Picture.image("green-sq.png")
+      pic.setPosition(cb.x + cb.width / 2, cb.y + 20)
+      pic
+    }
+    ret.setPosition(cb.x + cb.width / 2, cb.y + 20)
+    ret
+  }
+
+  def hunterPic(n: Int): Picture = {
+    val ret = if (rectCharacters) {
+      val pic = Picture.rectangle(40, 40)
+      pic.setFillColor(cm.lightBlue)
+      pic.setPenColor(cm.black)
+      pic
+    }
+    else {
+      Picture.image("blue-pentagon.png")
+    }
+    ret.setPosition(cb.x + cb.width / (nh + 2) * n, cb.y + randomDouble(100, cb.height - 200))
+    ret
+  }
+
+  val player = playerPic
   player.draw()
 
   val nh = 20
   val hunters = ArrayBuffer.empty[Picture]
   val huntersVel = mutable.HashMap.empty[Picture, Vector2D]
   repeatFor(1 to nh) { n =>
-    val pic = Picture.rectangle(40, 40)
-    pic.setFillColor(cm.lightBlue)
-    pic.setPenColor(cm.black)
-    pic.setPosition(cb.x + cb.width / (nh + 2) * n, cb.y + randomDouble(100, cb.height - 200))
+    val pic = hunterPic(n)
     hunters.append(pic)
     val hv = Vector2D(random(1, 4), random(1, 4))
     huntersVel(pic) = hv
