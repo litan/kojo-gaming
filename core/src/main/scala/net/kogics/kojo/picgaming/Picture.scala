@@ -53,6 +53,11 @@ trait Picture {
   def draw(): Unit = {
     PicGdxScreen.stage.addPicture(this)
   }
+
+  def erase(): Unit = {
+    PicGdxScreen.stage.removePicture(this)
+  }
+
   def setPosition(x0: Double, y0: Double): Unit = {
     x = x0
     y = y0
@@ -85,18 +90,20 @@ trait RasterPicture extends Picture {
 }
 
 trait VectorPicture extends Picture {
-  protected var penColor: Color = Color.RED
+  protected var penColor: Color = _
   protected var fillColor: Color = _
   private[picgaming] def realDrawOutlined(shapeRenderer: ShapeRenderer): Unit
   private[picgaming] def realDrawFilled(shapeRenderer: ShapeRenderer): Unit
   private[picgaming] def hasFill: Boolean = fillColor != null
   private[picgaming] def hasPen: Boolean = penColor != null
+  setPenColor(java.awt.Color.RED)
 
   def setPenColor(c: java.awt.Color): Unit = {
     if (c == null) {
       penColor = null
     }
     else {
+      penColor = if (penColor == null) new Color() else penColor
       Picture.setGdxColorFromAwtColor(penColor, c)
     }
   }

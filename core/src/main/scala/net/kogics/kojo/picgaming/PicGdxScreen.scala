@@ -1,15 +1,15 @@
 package net.kogics.kojo.picgaming
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.utils.Timer
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.Screen
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import net.kogics.kojo.gaming.WorldBounds
 
 object PicGdxScreen {
@@ -29,7 +29,23 @@ abstract class PicGdxScreen extends Screen with InputProcessor {
   shapeRenderer.setProjectionMatrix(camera.combined)
   spriteBatch.setProjectionMatrix(camera.combined)
 
-  def update(dt: Float): Unit
+  private var animateLoop: () => Unit = _
+
+  def animate(fn: => Unit): Unit = {
+    animateLoop = { () =>
+      fn
+    }
+  }
+
+  def timer(interval: Long)(fn: => Unit): Unit = {
+    Timer.schedule(() => fn, 0, interval / 1000f)
+  }
+
+  def update(dt: Float): Unit = {
+    if (animateLoop != null) {
+      animateLoop()
+    }
+  }
 
   override def render(dt: Float): Unit = {
     if (!paused) {

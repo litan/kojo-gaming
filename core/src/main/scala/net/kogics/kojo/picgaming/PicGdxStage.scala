@@ -11,8 +11,19 @@ class PicGdxStage {
   }
 
   def removePicture(p: Picture): Unit = {
-//    pictures.fi
-//    pictures.remove(p)
+    var found = false
+    var idx = 0
+    while (idx < pictures.length && !found) {
+      if (pictures(idx) == p) {
+        found = true
+      }
+      else {
+        idx += 1
+      }
+    }
+    if (found) {
+      pictures.remove(idx)
+    }
   }
 
   def filledPictures: ArrayBuffer[VectorPicture] = pictures.collect {
