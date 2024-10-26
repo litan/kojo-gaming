@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Intersector
 import com.badlogic.gdx.math.Polygon
 import com.badlogic.gdx.utils.FloatArray
+import com.badlogic.gdx.utils.TimeUtils
 import com.badlogic.gdx.Gdx
 import net.kogics.kojo.core.Point
 import net.kogics.kojo.gaming.TextureUtils
@@ -31,6 +32,7 @@ object Picture {
   def text(msg: String, size: Int, color: java.awt.Color) =
     new TextPicture(msg, size, setGdxColorFromAwtColor(workColor, color))
   def image(fileName: String) = new ImagePicture(fileName)
+  def batch(pics: collection.Seq[RasterPicture]): RasterPicture = new BatchPics(pics)
 }
 
 trait Picture {
@@ -169,4 +171,31 @@ class ImagePicture(fileName: String) extends RasterPicture {
   private[picgaming] def realDraw(batch: SpriteBatch): Unit = {
     batch.draw(textureRegion, x.toFloat, y.toFloat, width, height)
   }
+}
+
+class BatchPics(pics: collection.Seq[RasterPicture]) extends RasterPicture {
+  var currPicIndex = 0
+  var lastDraw = TimeUtils.millis()
+
+  private[picgaming] def realDraw(batch: SpriteBatch): Unit = {
+    val currPic = pics(currPicIndex)
+    val savedTransform = batch.getTransformMatrix.cpy();
+    batch.getTransformMatrix.translate(x.toFloat, y.toFloat, 0f)
+    batch.setTransformMatrix(batch.getTransformMatrix)
+    currPic.realDraw(batch)
+    batch.setTransformMatrix(savedTransform)
+  }
+
+  def showNext(gap: Long): Unit = {
+    val currTime = TimeUtils.millis()
+    if (currTime - lastDraw > gap) {
+      currPicIndex += 1
+      if (currPicIndex == pics.size) {
+        currPicIndex = 0
+      }
+      lastDraw = currTime
+    }
+  }
+
+  def bPoly: Polygon = pics(currPicIndex).bPoly
 }

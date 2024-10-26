@@ -2,12 +2,10 @@ package net.kogics.kojo.example
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
-
 import net.kogics.kojo.gaming.GdxGame
 import net.kogics.kojo.gaming.KojoUtils._
 import net.kogics.kojo.picgaming.Builtins._
-import net.kogics.kojo.picgaming.PicGdxScreen
-import net.kogics.kojo.picgaming.Picture
+import net.kogics.kojo.picgaming.{BatchPics, PicGdxScreen, Picture}
 import net.kogics.kojo.util.Vector2D
 
 class Hunted extends GdxGame {
@@ -32,7 +30,9 @@ class HuntedScreen extends PicGdxScreen {
       pic
     }
     else {
-      val pic = Picture.image("green-sq.png")
+      val pic1 = Picture.image("green-sq.png")
+      val pic2 = Picture.image("blue-sq.png")
+      val pic = Picture.batch(Seq(pic1, pic2))
       pic.setPosition(cb.x + cb.width / 2, cb.y + 20)
       pic
     }
@@ -57,7 +57,7 @@ class HuntedScreen extends PicGdxScreen {
   val player = playerPic
   player.draw()
 
-  val nh = 20
+  val nh = 10
   val hunters = ArrayBuffer.empty[Picture]
   val huntersVel = mutable.HashMap.empty[Picture, Vector2D]
   repeatFor(1 to nh) { n =>
@@ -88,6 +88,7 @@ class HuntedScreen extends PicGdxScreen {
       }
     }
 
+    player.asInstanceOf[BatchPics].showNext(200)
     if (isKeyPressed(Kc.VK_RIGHT)) {
       player.translate(speed, 0)
     }
