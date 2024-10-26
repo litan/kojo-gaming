@@ -1,14 +1,13 @@
 package net.kogics.kojo.picgaming
-
 import java.awt.Color
+
+import scala.language.implicitConversions
 
 import com.badlogic.gdx.math.Intersector
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.Gdx
 import net.kogics.kojo.doodle
 import net.kogics.kojo.gaming.WorldBounds
 import net.kogics.kojo.staging
-import net.kogics.kojo.staging.Rectangle
 import net.kogics.kojo.util.Utils
 import net.kogics.kojo.util.Vector2D
 
@@ -139,7 +138,11 @@ object Builtins {
     screen.pause()
   }
 
-  def drawCenteredMessage(message: String, color: Color = cm.black, fontSize: Int = 15): Unit = {}
+  def drawCenteredMessage(message: String, color: Color = cm.black, fontSize: Int = 15): Unit = {
+    val pic = Picture.text(message, fontSize, color)
+    pic.translate(-pic.width.toDouble / 2, pic.height.toDouble / 2)
+    pic.draw()
+  }
   def showGameTime(
       limitSecs: Int,
       endMsg: => String,

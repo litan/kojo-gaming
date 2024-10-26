@@ -23,8 +23,7 @@ class PicGdxStage {
     case p: VectorPicture if p.hasPen => p
   }
 
-  def imagePictures: ArrayBuffer[Picture] = pictures.filter {
-    case p: VectorPicture => false
-    case _                => true
+  def imagePictures: ArrayBuffer[RasterPicture] = pictures.collect {
+    case p: RasterPicture => p
   }
 }

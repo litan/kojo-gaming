@@ -9,6 +9,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.Screen
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import net.kogics.kojo.gaming.WorldBounds
 
 object PicGdxScreen {
@@ -19,12 +20,14 @@ object PicGdxScreen {
 abstract class PicGdxScreen extends Screen with InputProcessor {
   PicGdxScreen.stage = new PicGdxStage()
   val shapeRenderer = new ShapeRenderer()
+  val spriteBatch = new SpriteBatch()
   var paused = false
   WorldBounds.set(Gdx.graphics.getWidth, Gdx.graphics.getHeight)
   val camera = new OrthographicCamera(WorldBounds.width, WorldBounds.height)
   camera.position.set(0, 0, 0)
   camera.update()
   shapeRenderer.setProjectionMatrix(camera.combined)
+  spriteBatch.setProjectionMatrix(camera.combined)
 
   def update(dt: Float): Unit
 
@@ -48,6 +51,12 @@ abstract class PicGdxScreen extends Screen with InputProcessor {
         p.realDrawOutlined(shapeRenderer)
       }
       shapeRenderer.end()
+
+      spriteBatch.begin()
+      for (p <- PicGdxScreen.stage.imagePictures) {
+        p.realDraw(spriteBatch)
+      }
+      spriteBatch.end()
     }
   }
 

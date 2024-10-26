@@ -26,6 +26,9 @@ configure(subprojects) {
   compileJava {
     options.incremental = true
   }
+  compileScala {
+    scalaCompileOptions.additionalParameters = ["-feature", "-deprecation", "-unchecked"]
+  }
 }
 
 subprojects {

@@ -42,9 +42,9 @@ class HuntedScreen extends PicGdxScreen {
     pic.draw()
   }
 
-  def gameLost() {
+  def gameLost(): Unit = {
     stopAnimation(this)
-    drawCenteredMessage("You Lost", cm.red, 30)
+    drawCenteredMessage("You Lost", cm.tomato, 50)
   }
 
   val speed = 5

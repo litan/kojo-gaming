@@ -45,5 +45,11 @@ class GdxGame extends Game {
     textButtonStyle.up = new NinePatchDrawable(buttonPatch)
     textButtonStyle.font = customLargeFont
     textButtonStyle.fontColor = Color.GRAY
+
+    fontGenerator.dispose()
+  }
+
+  override def dispose(): Unit = {
+    super.dispose()
   }
 }
