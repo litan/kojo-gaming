@@ -29,7 +29,7 @@ class PicMainScreen extends PicGdxScreen {
 
   for (player <- players) player.draw()
 
-  def update(dt: Float): Unit = {
+  animate {
     for (idx <- players.indices) {
       val player = players(idx)
       var vel = velocities(idx)

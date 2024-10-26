@@ -74,7 +74,7 @@ class HuntedScreen extends PicGdxScreen {
   }
 
   val speed = 5
-  def update(dt: Float): Unit = {
+  animate {
     repeatFor(hunters) { h =>
       var hv = huntersVel(h)
       h.translate(hv)
@@ -106,6 +106,7 @@ class HuntedScreen extends PicGdxScreen {
       gameLost()
     }
   }
+
   showGameTime(10, "You Win", cm.black, 25)
   activateCanvas()
 }

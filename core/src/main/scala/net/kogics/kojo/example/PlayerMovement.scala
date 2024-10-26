@@ -22,7 +22,7 @@ class PlayerMovementScreen extends PicGdxScreen {
 
   player.draw()
 
-  def update(dt: Float): Unit = {
+  animate {
     if (isKeyPressed(Kc.VK_UP)) {
       player.translate(0, 5)
     }
