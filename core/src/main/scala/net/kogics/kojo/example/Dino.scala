@@ -61,7 +61,7 @@ class DinoScreen extends PicGdxScreen {
     repeatFor(obsticles) { o =>
       o.translate(ovel)
       if (o.collidesWith(us)) {
-        stopAnimation(this)
+        stopAnimation()
       }
       if (o.collidesWith(stageLeft)) {
         o.erase()

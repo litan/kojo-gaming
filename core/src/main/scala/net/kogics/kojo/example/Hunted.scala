@@ -69,7 +69,7 @@ class HuntedScreen extends PicGdxScreen {
   }
 
   def gameLost(): Unit = {
-    stopAnimation(this)
+    stopAnimation()
     drawCenteredMessage("You Lost", cm.tomato, 50)
   }
 
@@ -113,6 +113,6 @@ class HuntedScreen extends PicGdxScreen {
     }
   }
 
-  showGameTime(10, "You Win", cm.black, 25)
+  showGameTime(10, "You Win", cm.white, 25)
   activateCanvas()
 }

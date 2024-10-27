@@ -17,6 +17,7 @@ import net.kogics.kojo.gaming.TextureUtils
 import net.kogics.kojo.util.Vector2D
 
 object Picture {
+  var stage: PicGdxStage = _
   private var workColor = new Color()
 
   private[picgaming] def setGdxColorFromAwtColor(gdxColor: Color, awtColor: java.awt.Color): Color = {
@@ -51,11 +52,11 @@ trait Picture {
   }
 
   def draw(): Unit = {
-    PicGdxScreen.stage.addPicture(this)
+    Picture.stage.addPicture(this)
   }
 
   def erase(): Unit = {
-    PicGdxScreen.stage.removePicture(this)
+    Picture.stage.removePicture(this)
   }
 
   def setPosition(x0: Double, y0: Double): Unit = {
@@ -149,7 +150,7 @@ object TextPicture {
   val layout = new GlyphLayout()
 }
 
-class TextPicture(msg: String, size: Int, color: Color = Color.WHITE) extends RasterPicture {
+class TextPicture(var msg: String, size: Int, color: Color = Color.WHITE) extends RasterPicture {
   import net.kogics.kojo.picgaming.TextPicture._
   fontParameters.size = size
   fontParameters.color = color
@@ -166,6 +167,10 @@ class TextPicture(msg: String, size: Int, color: Color = Color.WHITE) extends Ra
     val h = height
     val vertices = Array(0f, 0f, w, 0, w, h, 0, h)
     new Polygon(vertices)
+  }
+
+  def setText(m: String): Unit = {
+    msg = m
   }
 
   private[picgaming] def realDraw(batch: SpriteBatch): Unit = {

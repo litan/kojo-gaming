@@ -134,24 +134,12 @@ object Builtins {
 
   case class Bounds(x: Double, y: Double, width: Double, height: Double)
   def canvasBounds = Bounds(bottomLeft.x, bottomLeft.y, WorldBounds.width, WorldBounds.height)
-  def stopAnimation(implicit screen: PicGdxScreen): Unit = {
-    screen.pause()
-  }
 
   def drawCenteredMessage(message: String, color: Color = cm.black, fontSize: Int = 15): Unit = {
     val pic = Picture.text(message, fontSize, color)
     pic.translate(-pic.width.toDouble / 2, pic.height.toDouble / 2)
     pic.draw()
   }
-  def showGameTime(
-      limitSecs: Int,
-      endMsg: => String,
-      color: Color = cm.black,
-      fontSize: Int = 15,
-      dx: Double = 10,
-      dy: Double = 50,
-      countDown: Boolean = false
-  ): Unit = {}
 
   def activateCanvas(): Unit = {}
 }

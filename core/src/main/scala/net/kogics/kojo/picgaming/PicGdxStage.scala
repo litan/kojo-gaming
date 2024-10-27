@@ -1,6 +1,10 @@
 package net.kogics.kojo.picgaming
 
+import java.awt.Color
+
 import scala.collection.mutable.ArrayBuffer
+
+import net.kogics.kojo.gaming.WorldBounds
 
 class PicGdxStage {
 

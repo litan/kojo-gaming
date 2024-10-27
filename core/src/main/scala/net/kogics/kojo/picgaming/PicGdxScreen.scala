@@ -1,5 +1,7 @@
 package net.kogics.kojo.picgaming
 
+import java.awt.Color
+
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType
@@ -11,14 +13,11 @@ import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.Screen
 import net.kogics.kojo.gaming.WorldBounds
-
-object PicGdxScreen {
-  var stage: PicGdxStage = _
-
-}
+import net.kogics.kojo.picgaming.Builtins._
 
 abstract class PicGdxScreen extends Screen with InputProcessor {
-  PicGdxScreen.stage = new PicGdxStage()
+  val stage = new PicGdxStage()
+  Picture.stage = stage
   val shapeRenderer = new ShapeRenderer()
   val spriteBatch = new SpriteBatch()
   var paused = false
@@ -45,6 +44,22 @@ abstract class PicGdxScreen extends Screen with InputProcessor {
     if (animateLoop != null) {
       animateLoop()
     }
+
+    // do processing for value add stuff provide by screen
+    // game time on bottom left
+    gameTimeInfo match {
+      case Some(ginfo) =>
+        gameTime += dt
+        if (gameTime >= ginfo.limit) {
+          ginfo.pic.erase()
+          drawCenteredMessage(ginfo.endMsg, cm.green, 30)
+          stopAnimation()
+        }
+        else {
+          ginfo.pic.setText(gameTimeString)
+        }
+      case None =>
+    }
   }
 
   override def render(dt: Float): Unit = {
@@ -57,19 +72,19 @@ abstract class PicGdxScreen extends Screen with InputProcessor {
 
       // draw the pic scene graph
       shapeRenderer.begin(ShapeType.Filled)
-      for (p <- PicGdxScreen.stage.filledPictures) {
+      for (p <- stage.filledPictures) {
         p.realDrawFilled(shapeRenderer)
       }
       shapeRenderer.end()
 
       shapeRenderer.begin(ShapeType.Line)
-      for (p <- PicGdxScreen.stage.outlinedPictures) {
+      for (p <- stage.outlinedPictures) {
         p.realDrawOutlined(shapeRenderer)
       }
       shapeRenderer.end()
 
       spriteBatch.begin()
-      for (p <- PicGdxScreen.stage.imagePictures) {
+      for (p <- stage.imagePictures) {
         p.realDraw(spriteBatch)
       }
       spriteBatch.end()
@@ -119,4 +134,30 @@ abstract class PicGdxScreen extends Screen with InputProcessor {
 
   override def scrolled(amountX: Float, amountY: Float) = false
 
+  // Kojo API support
+
+  def stopAnimation(): Unit = {
+    pause()
+  }
+
+  case class GameTimeInfo(pic: TextPicture, limit: Int, endMsg: String)
+
+  var gameTimeInfo: Option[GameTimeInfo] = None
+  var gameTime = 0f
+  def gameTimeString: String = gameTime.toInt.toString
+
+  def showGameTime(
+      limitSecs: Int,
+      endMsg: => String,
+      color: Color = cm.black,
+      fontSize: Int = 15,
+      dx: Double = 10,
+      dy: Double = 50,
+      countDown: Boolean = false
+  ): Unit = {
+    val pic = Picture.text(gameTimeString, fontSize, color)
+    gameTimeInfo = Some(GameTimeInfo(pic, limitSecs, endMsg))
+    pic.setPosition(-WorldBounds.width / 2 + dx, -WorldBounds.height / 2 + dy)
+    pic.draw()
+  }
 }
