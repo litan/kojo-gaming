@@ -101,6 +101,12 @@ class HuntedScreen extends PicGdxScreen {
     if (isKeyPressed(Kc.VK_DOWN)) {
       player.translate(0, -speed)
     }
+    if (isKeyPressed(Kc.VK_W)) {
+      player.rotate(3)
+    }
+    if (isKeyPressed(Kc.VK_S)) {
+      player.scale(0.95)
+    }
 
     if (player.collidesWith(stageBorder)) {
       gameLost()

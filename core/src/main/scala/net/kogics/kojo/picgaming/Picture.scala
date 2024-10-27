@@ -45,8 +45,8 @@ trait Picture {
   def boundaryPolygon: Polygon = {
     bPoly.setPosition(x.toFloat, y.toFloat)
     //    bPoly.setOrigin(getOriginX, getOriginY)
-    //    bPoly.setRotation(getRotation)
-    //    bPoly.setScale(getScaleX, getScaleY)
+    bPoly.setRotation(rotation.toFloat)
+    bPoly.setScale(scaleX.toFloat, scaleY.toFloat)
     bPoly
   }
 
@@ -69,6 +69,16 @@ trait Picture {
     y += dy
   }
   def translate(vel: Vector2D): Unit = translate(vel.x, vel.y)
+
+  def rotate(a: Double): Unit = {
+    rotation += a
+  }
+
+  def scale(factor: Double): Unit = {
+    val sf = if (factor == 0) Double.MinPositiveValue else factor
+    scaleX *= sf
+    scaleY *= sf
+  }
 
   def collidesWith(other: Picture): Boolean = {
     if (other == Builtins.stageBorder)
@@ -176,18 +186,31 @@ class ImagePicture(fileName: String) extends RasterPicture {
   }
 
   private[picgaming] def realDraw(batch: SpriteBatch): Unit = {
-    batch.draw(textureRegion, x.toFloat, y.toFloat, width, height)
+    batch.draw(
+      textureRegion,
+      x.toFloat,
+      y.toFloat,
+      0,
+      0,
+      width,
+      height,
+      scaleX.toFloat,
+      scaleY.toFloat,
+      rotation.toFloat
+    )
   }
 }
 
 class BatchPics(pics: collection.Seq[RasterPicture]) extends RasterPicture {
-  var currPicIndex = 0
-  var lastDraw = TimeUtils.millis()
+  private var currPicIndex = 0
+  private var lastIndexChange = TimeUtils.millis()
 
   private[picgaming] def realDraw(batch: SpriteBatch): Unit = {
     val currPic = pics(currPicIndex)
     val savedTransform = batch.getTransformMatrix.cpy();
     batch.getTransformMatrix.translate(x.toFloat, y.toFloat, 0f)
+    batch.getTransformMatrix.rotate(0, 0, 1, rotation.toFloat)
+    batch.getTransformMatrix.scale(scaleX.toFloat, scaleY.toFloat, 1)
     batch.setTransformMatrix(batch.getTransformMatrix)
     currPic.realDraw(batch)
     batch.setTransformMatrix(savedTransform)
@@ -195,12 +218,12 @@ class BatchPics(pics: collection.Seq[RasterPicture]) extends RasterPicture {
 
   def showNext(gap: Long): Unit = {
     val currTime = TimeUtils.millis()
-    if (currTime - lastDraw > gap) {
+    if (currTime - lastIndexChange > gap) {
       currPicIndex += 1
       if (currPicIndex == pics.size) {
         currPicIndex = 0
       }
-      lastDraw = currTime
+      lastIndexChange = currTime
     }
   }
 
