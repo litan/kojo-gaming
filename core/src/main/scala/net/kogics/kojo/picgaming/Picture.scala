@@ -1,5 +1,7 @@
 package net.kogics.kojo.picgaming
 
+import java.awt.image.BufferedImage
+
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -7,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.Texture.TextureFilter
 import com.badlogic.gdx.math.Intersector
 import com.badlogic.gdx.math.Polygon
 import com.badlogic.gdx.utils.FloatArray
@@ -32,11 +35,32 @@ object Picture {
   def rectangle(w: Double, h: Double): VectorPicture = new RectPicture(w, h)
   def text(msg: String, size: Int, color: java.awt.Color) =
     new TextPicture(msg, size, setGdxColorFromAwtColor(workColor, color))
-  def image(fileName: String) = new ImagePicture(fileName)
+  def image(fileName: String) = {
+    val textureRegion = TextureUtils.loadTexture(fileName)
+    new ImagePicture(textureRegion)
+  }
+  def image(img: BufferedImage) = {
+    val texture = ImageConverter.bufferedImageToTexture(img)
+    texture.setFilter(TextureFilter.Linear, TextureFilter.Linear)
+    val textureRegion = new TextureRegion(texture)
+    new ImagePicture(textureRegion)
+  }
   def batch(pics: collection.Seq[RasterPicture]): RasterPicture = new BatchPics(pics)
 }
 
-trait Picture {
+trait PictureShowHide {
+  var showing = true
+
+  def visible(): Unit = {
+    showing = true
+  }
+
+  def invisible(): Unit = {
+    showing = false
+  }
+}
+
+trait Picture extends PictureShowHide {
   protected var x = 0.0
   protected var y = 0.0
   protected var rotation = 0.0 // radians
@@ -44,15 +68,21 @@ trait Picture {
   protected var scaleY = 1.0
   def bPoly: Polygon
   def boundaryPolygon: Polygon = {
-    bPoly.setPosition(x.toFloat, y.toFloat)
+    val bP = bPoly
+    bP.setPosition(x.toFloat, y.toFloat)
     //    bPoly.setOrigin(getOriginX, getOriginY)
-    bPoly.setRotation(rotation.toFloat)
-    bPoly.setScale(scaleX.toFloat, scaleY.toFloat)
-    bPoly
+    bP.setRotation(rotation.toFloat)
+    bP.setScale(scaleX.toFloat, scaleY.toFloat)
+    bP
   }
 
   def draw(): Unit = {
     Picture.stage.addPicture(this)
+  }
+
+  def drawAndHide(): Unit = {
+    draw()
+    invisible()
   }
 
   def erase(): Unit = {
@@ -63,6 +93,7 @@ trait Picture {
     x = x0
     y = y0
   }
+  def setPosition(pos: Point): Unit = setPosition(pos.x, pos.y)
 
   def position: Point = Point(x, y)
   def translate(dx: Double, dy: Double): Unit = {
@@ -93,6 +124,10 @@ trait Picture {
       new FloatArray(boundaryPolygon.getTransformedVertices),
       new FloatArray(Builtins.stageBorder.boundaryPolygon.getTransformedVertices)
     )
+  }
+
+  def setOpacity(f: Double): Unit = {
+    // todo
   }
 }
 
@@ -134,11 +169,13 @@ class RectPicture(w: Double, h: Double) extends VectorPicture {
     val vertices = Array(0f, 0f, w.toFloat, 0, w.toFloat, h.toFloat, 0, h.toFloat)
     new Polygon(vertices)
   }
-  def realDrawOutlined(shapeRenderer: ShapeRenderer): Unit = {
+  private[picgaming] def realDrawOutlined(shapeRenderer: ShapeRenderer): Unit = {
+    if (!showing) return
     shapeRenderer.setColor(penColor)
     shapeRenderer.rect(x.toFloat, y.toFloat, w.toFloat, h.toFloat)
   }
-  def realDrawFilled(shapeRenderer: ShapeRenderer): Unit = {
+  private[picgaming] def realDrawFilled(shapeRenderer: ShapeRenderer): Unit = {
+    if (!showing) return
     shapeRenderer.setColor(fillColor)
     shapeRenderer.rect(x.toFloat, y.toFloat, w.toFloat, h.toFloat)
   }
@@ -174,12 +211,12 @@ class TextPicture(var msg: String, size: Int, color: Color = Color.WHITE) extend
   }
 
   private[picgaming] def realDraw(batch: SpriteBatch): Unit = {
+    if (!showing) return
     font.draw(batch, msg, x.toFloat, y.toFloat)
   }
 }
 
-class ImagePicture(fileName: String) extends RasterPicture {
-  private val textureRegion: TextureRegion = TextureUtils.loadTexture(fileName)
+class ImagePicture(textureRegion: TextureRegion) extends RasterPicture {
   val width = textureRegion.getRegionWidth.toFloat
   val height = textureRegion.getRegionHeight.toFloat
 
@@ -191,6 +228,7 @@ class ImagePicture(fileName: String) extends RasterPicture {
   }
 
   private[picgaming] def realDraw(batch: SpriteBatch): Unit = {
+    if (!showing) return
     batch.draw(
       textureRegion,
       x.toFloat,
@@ -211,6 +249,7 @@ class BatchPics(pics: collection.Seq[RasterPicture]) extends RasterPicture {
   private var lastIndexChange = TimeUtils.millis()
 
   private[picgaming] def realDraw(batch: SpriteBatch): Unit = {
+    if (!showing) return
     val currPic = pics(currPicIndex)
     val savedTransform = batch.getTransformMatrix.cpy();
     batch.getTransformMatrix.translate(x.toFloat, y.toFloat, 0f)
@@ -232,5 +271,5 @@ class BatchPics(pics: collection.Seq[RasterPicture]) extends RasterPicture {
     }
   }
 
-  def bPoly: Polygon = pics(currPicIndex).bPoly
+  def bPoly: Polygon = new Polygon(pics(currPicIndex).boundaryPolygon.getTransformedVertices)
 }
