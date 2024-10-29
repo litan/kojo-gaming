@@ -1,14 +1,17 @@
 package net.kogics.kojo.example
 
+import java.awt.image.BufferedImage
+
+import net.kogics.kojo.core.Point
 import net.kogics.kojo.gaming.GdxGame
 import net.kogics.kojo.gaming.KojoUtils._
+import net.kogics.kojo.picgaming.tiles.SpriteSheet
+import net.kogics.kojo.picgaming.tiles.TileWorld
+import net.kogics.kojo.picgaming.tiles.TileXY
+import net.kogics.kojo.picgaming.BatchPics
 import net.kogics.kojo.picgaming.Builtins._
-import net.kogics.kojo.picgaming.{BatchPics, PicGdxScreen, Picture}
-import net.kogics.kojo.picgaming.tiles.{SpriteSheet, TileWorld, TileXY}
-import net.kogics.kojo.core.Point
-
-import java.awt.Image
-import java.awt.image.BufferedImage
+import net.kogics.kojo.picgaming.PicGdxScreen
+import net.kogics.kojo.picgaming.Picture
 
 class Platformer extends GdxGame {
   override def create(): Unit = {
@@ -19,7 +22,8 @@ class Platformer extends GdxGame {
 
 class PlatformerScreen extends PicGdxScreen {
   cleari()
-
+  val cb = canvasBounds
+  scroll(-cb.x, cb.y)
   // Tiled map layer of tiles that you collide with
   val collisionLayer = 1
 
@@ -38,35 +42,43 @@ class PlatformerScreen extends PicGdxScreen {
     val stillRight = picBatch(playerPicture(sheet.imageAt(0, 0)))
     val stillLeft = picBatch(playerPicture(sheet.imageAt(0, 1)))
 
-    val runningRight = picBatch(List(
-      sheet.imageAt(0, 2),
-      sheet.imageAt(1, 2),
-      sheet.imageAt(2, 2),
-      sheet.imageAt(3, 2),
-      sheet.imageAt(4, 2)
-    ).map(playerPicture))
+    val runningRight = picBatch(
+      List(
+        sheet.imageAt(0, 2),
+        sheet.imageAt(1, 2),
+        sheet.imageAt(2, 2),
+        sheet.imageAt(3, 2),
+        sheet.imageAt(4, 2)
+      ).map(playerPicture)
+    )
 
-    val runningLeft = picBatch(List(
-      sheet.imageAt(0, 3),
-      sheet.imageAt(1, 3),
-      sheet.imageAt(2, 3),
-      sheet.imageAt(3, 3),
-      sheet.imageAt(4, 3)
-    ).map(playerPicture))
+    val runningLeft = picBatch(
+      List(
+        sheet.imageAt(0, 3),
+        sheet.imageAt(1, 3),
+        sheet.imageAt(2, 3),
+        sheet.imageAt(3, 3),
+        sheet.imageAt(4, 3)
+      ).map(playerPicture)
+    )
 
-    val jumpingRight = picBatch(List(
-      sheet.imageAt(0, 0),
-      sheet.imageAt(1, 0),
-      sheet.imageAt(2, 0),
-      sheet.imageAt(3, 0)
-    ).map(playerPicture))
+    val jumpingRight = picBatch(
+      List(
+        sheet.imageAt(0, 0),
+        sheet.imageAt(1, 0),
+        sheet.imageAt(2, 0),
+        sheet.imageAt(3, 0)
+      ).map(playerPicture)
+    )
 
-    val jumpingLeft = picBatch(List(
-      sheet.imageAt(0, 1),
-      sheet.imageAt(1, 1),
-      sheet.imageAt(2, 1),
-      sheet.imageAt(3, 1)
-    ).map(playerPicture))
+    val jumpingLeft = picBatch(
+      List(
+        sheet.imageAt(0, 1),
+        sheet.imageAt(1, 1),
+        sheet.imageAt(2, 1),
+        sheet.imageAt(3, 1)
+      ).map(playerPicture)
+    )
 
     var currentPic = stillRight
     currentPic.setPosition(playerPos)
@@ -164,16 +176,16 @@ class PlatformerScreen extends PicGdxScreen {
 
     var cb = canvasBounds
     def scrollIfNeeded() {
-//      val threshold = 200
-//      val pos = currentPic.position
-//      if (cb.x + cb.width - pos.x < threshold) {
-//        scroll(speedX, 0)
-//        cb = canvasBounds
-//      }
-//      else if (pos.x - cb.x < threshold) {
-//        scroll(-speedX, 0)
-//        cb = canvasBounds
-//      }
+      val threshold = 200
+      val pos = currentPic.position
+      if (cb.x + cb.width - pos.x < threshold) {
+        scroll(speedX, 0)
+        cb = canvasBounds
+      }
+      else if (pos.x - cb.x < threshold) {
+        scroll(-speedX, 0)
+        cb = canvasBounds
+      }
     }
 
     def updateImage(newPic: BatchPics) {
@@ -188,7 +200,7 @@ class PlatformerScreen extends PicGdxScreen {
     def draw() {
       stillLeft.drawAndHide()
       runningLeft.drawAndHide()
-      runningRight.draw()
+      runningRight.drawAndHide()
       jumpingLeft.drawAndHide()
       jumpingRight.drawAndHide()
       currentPic.draw()
@@ -208,10 +220,12 @@ class PlatformerScreen extends PicGdxScreen {
       pic
     }
 
-    var currentPic = picBatch(List(
-      sheet.imageAt(0, 6),
-      sheet.imageAt(1, 6)
-    ).map(attackerPicture))
+    var currentPic = picBatch(
+      List(
+        sheet.imageAt(0, 6),
+        sheet.imageAt(1, 6)
+      ).map(attackerPicture)
+    )
 
     currentPic.setPosition(playerPos)
 

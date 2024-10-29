@@ -133,7 +133,6 @@ object Builtins {
   val noColor = staging.KColor.noColor
 
   case class Bounds(x: Double, y: Double, width: Double, height: Double)
-  def canvasBounds = Bounds(bottomLeft.x, bottomLeft.y, WorldBounds.width, WorldBounds.height)
 
   def drawCenteredMessage(message: String, color: Color = cm.black, fontSize: Int = 15): Unit = {
     val pic = Picture.text(message, fontSize, color)

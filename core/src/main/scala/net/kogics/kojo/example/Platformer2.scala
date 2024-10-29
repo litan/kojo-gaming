@@ -208,7 +208,7 @@ class PlatformerScreen2 extends PicGdxScreen {
     def draw() {
       stillLeft.drawAndHide()
       runningLeft.drawAndHide()
-      runningRight.draw()
+      runningRight.drawAndHide()
       jumpingLeft.drawAndHide()
       jumpingRight.drawAndHide()
       currentPic.draw()

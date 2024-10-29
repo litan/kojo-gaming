@@ -24,9 +24,6 @@ abstract class PicGdxScreen extends Screen with InputProcessor {
   WorldBounds.set(Gdx.graphics.getWidth, Gdx.graphics.getHeight)
   val camera = new OrthographicCamera(WorldBounds.width, WorldBounds.height)
   camera.position.set(0, 0, 0)
-  camera.update()
-  shapeRenderer.setProjectionMatrix(camera.combined)
-  spriteBatch.setProjectionMatrix(camera.combined)
 
   private var animateLoop: () => Unit = _
 
@@ -64,6 +61,9 @@ abstract class PicGdxScreen extends Screen with InputProcessor {
 
   override def render(dt: Float): Unit = {
     if (!paused) {
+      camera.update()
+      shapeRenderer.setProjectionMatrix(camera.combined)
+      spriteBatch.setProjectionMatrix(camera.combined)
 
       update(dt)
 
@@ -159,5 +159,16 @@ abstract class PicGdxScreen extends Screen with InputProcessor {
     gameTimeInfo = Some(GameTimeInfo(pic, limitSecs, endMsg))
     pic.setPosition(-WorldBounds.width / 2 + dx, -WorldBounds.height / 2 + dy)
     pic.draw()
+  }
+
+  def scroll(x: Double, y: Double): Unit = {
+    camera.translate(x.toFloat, y.toFloat)
+  }
+
+  def canvasBounds = {
+    val w = camera.viewportWidth * camera.zoom
+    val h = camera.viewportHeight * camera.zoom
+    val p = camera.position
+    Bounds(p.x - w / 2, p.y - h / 2, w, h)
   }
 }
