@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.Texture.TextureFilter
 import com.badlogic.gdx.math.Intersector
@@ -66,6 +67,7 @@ trait Picture extends PictureShowHide {
   protected var rotation = 0.0 // radians
   protected var scaleX = 1.0
   protected var scaleY = 1.0
+  protected var opacity = 1.0
   def bPoly: Polygon
   def boundaryPolygon: Polygon = {
     val bP = bPoly
@@ -126,8 +128,8 @@ trait Picture extends PictureShowHide {
     )
   }
 
-  def setOpacity(f: Double): Unit = {
-    // todo
+  def setOpacity(o: Double): Unit = {
+    opacity = o
   }
 }
 
@@ -171,7 +173,16 @@ class RectPicture(w: Double, h: Double) extends VectorPicture {
   }
   private[picgaming] def realDrawOutlined(shapeRenderer: ShapeRenderer): Unit = {
     if (!showing) return
-    shapeRenderer.setColor(penColor)
+    if (opacity < 1) {
+      if (!Gdx.gl.glIsEnabled(GL20.GL_BLEND)) {
+        Gdx.gl.glEnable(GL20.GL_BLEND)
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
+      }
+      shapeRenderer.setColor(penColor.r, penColor.g, penColor.b, opacity.toFloat)
+    }
+    else {
+      shapeRenderer.setColor(penColor)
+    }
     shapeRenderer.rect(
       x.toFloat,
       y.toFloat,
@@ -186,7 +197,16 @@ class RectPicture(w: Double, h: Double) extends VectorPicture {
   }
   private[picgaming] def realDrawFilled(shapeRenderer: ShapeRenderer): Unit = {
     if (!showing) return
-    shapeRenderer.setColor(fillColor)
+    if (opacity < 1) {
+      if (!Gdx.gl.glIsEnabled(GL20.GL_BLEND)) {
+        Gdx.gl.glEnable(GL20.GL_BLEND)
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
+      }
+      shapeRenderer.setColor(fillColor.r, fillColor.g, fillColor.b, opacity.toFloat)
+    }
+    else {
+      shapeRenderer.setColor(fillColor)
+    }
     shapeRenderer.rect(
       x.toFloat,
       y.toFloat,
@@ -232,7 +252,17 @@ class TextPicture(var msg: String, size: Int, color: Color = Color.WHITE) extend
 
   private[picgaming] def realDraw(batch: SpriteBatch): Unit = {
     if (!showing) return
+    var clr: Color = null
+    if (opacity < 1) {
+      clr = font.getColor.cpy()
+      font.setColor(clr.r, clr.g, clr.b, opacity.toFloat)
+    }
+
     font.draw(batch, msg, x.toFloat, y.toFloat)
+
+    if (opacity < 1) {
+      font.setColor(clr)
+    }
   }
 }
 
@@ -249,6 +279,12 @@ class ImagePicture(textureRegion: TextureRegion) extends RasterPicture {
 
   private[picgaming] def realDraw(batch: SpriteBatch): Unit = {
     if (!showing) return
+    var clr: Color = null
+    if (opacity < 1) {
+      clr = batch.getColor.cpy()
+      batch.setColor(clr.r, clr.g, clr.b, opacity.toFloat)
+    }
+
     batch.draw(
       textureRegion,
       x.toFloat,
@@ -261,6 +297,10 @@ class ImagePicture(textureRegion: TextureRegion) extends RasterPicture {
       scaleY.toFloat,
       rotation.toFloat
     )
+
+    if (opacity < 1) {
+      batch.setColor(clr)
+    }
   }
 }
 
