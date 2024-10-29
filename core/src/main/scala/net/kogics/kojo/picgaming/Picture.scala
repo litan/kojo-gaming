@@ -172,12 +172,32 @@ class RectPicture(w: Double, h: Double) extends VectorPicture {
   private[picgaming] def realDrawOutlined(shapeRenderer: ShapeRenderer): Unit = {
     if (!showing) return
     shapeRenderer.setColor(penColor)
-    shapeRenderer.rect(x.toFloat, y.toFloat, w.toFloat, h.toFloat)
+    shapeRenderer.rect(
+      x.toFloat,
+      y.toFloat,
+      0,
+      0,
+      w.toFloat,
+      h.toFloat,
+      scaleX.toFloat,
+      scaleY.toFloat,
+      rotation.toFloat
+    )
   }
   private[picgaming] def realDrawFilled(shapeRenderer: ShapeRenderer): Unit = {
     if (!showing) return
     shapeRenderer.setColor(fillColor)
-    shapeRenderer.rect(x.toFloat, y.toFloat, w.toFloat, h.toFloat)
+    shapeRenderer.rect(
+      x.toFloat,
+      y.toFloat,
+      0,
+      0,
+      w.toFloat,
+      h.toFloat,
+      scaleX.toFloat,
+      scaleY.toFloat,
+      rotation.toFloat
+    )
   }
 }
 
