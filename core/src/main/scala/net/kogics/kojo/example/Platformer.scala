@@ -35,7 +35,7 @@ class PlatformerScreen extends PicGdxScreen {
     // scale the player down to fit into a 24 pixel wide tile
     def playerPicture(img: BufferedImage) = {
       val pic = Picture.image(img)
-      pic.scale(0.5)
+      pic.scale(0.8)
       pic
     }
 
@@ -275,6 +275,12 @@ class PlatformerScreen extends PicGdxScreen {
     new AttackerUpDown(35, 3, tileWorld)
   )
 
+  tileWorld.draw()
+  player.draw()
+  attackers.foreach { attacker =>
+    attacker.draw()
+  }
+
   val goal = Picture.rectangle(10, 10)
   goal.setPosition(tileWorld.tileToKojo(TileXY(9, 2)) + Point(12, 12))
   goal.setFillColor(cm.greenYellow)
@@ -287,12 +293,6 @@ class PlatformerScreen extends PicGdxScreen {
   halfwayGoal.setFillColor(cm.red)
   halfwayGoal.setPenColor(cm.black)
   halfwayGoal.draw()
-
-  tileWorld.draw()
-  player.draw()
-  attackers.foreach { attacker =>
-    attacker.draw()
-  }
 
   animate {
     tileWorld.step()

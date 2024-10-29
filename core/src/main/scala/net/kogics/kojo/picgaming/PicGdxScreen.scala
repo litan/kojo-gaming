@@ -71,6 +71,12 @@ abstract class PicGdxScreen extends Screen with InputProcessor {
       Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
       // draw the pic scene graph
+      spriteBatch.begin()
+      for (p <- stage.imagePictures) {
+        p.realDraw(spriteBatch)
+      }
+      spriteBatch.end()
+
       shapeRenderer.begin(ShapeType.Filled)
       for (p <- stage.filledPictures) {
         p.realDrawFilled(shapeRenderer)
@@ -82,12 +88,6 @@ abstract class PicGdxScreen extends Screen with InputProcessor {
         p.realDrawOutlined(shapeRenderer)
       }
       shapeRenderer.end()
-
-      spriteBatch.begin()
-      for (p <- stage.imagePictures) {
-        p.realDraw(spriteBatch)
-      }
-      spriteBatch.end()
     }
   }
 
