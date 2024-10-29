@@ -117,8 +117,14 @@ trait Picture extends PictureShowHide {
   def collidesWith(other: Picture): Boolean = {
     if (other == Builtins.stageBorder)
       collidesWithStage()
-    else
-      Intersector.overlapConvexPolygons(boundaryPolygon, other.boundaryPolygon)
+    else {
+      val poly1 = boundaryPolygon
+      val poly2 = other.boundaryPolygon
+      if (poly1.getBoundingRectangle.overlaps(poly2.getBoundingRectangle))
+        Intersector.overlapConvexPolygons(poly1, poly2)
+      else
+        false
+    }
   }
 
   def collidesWithStage(): Boolean = {
