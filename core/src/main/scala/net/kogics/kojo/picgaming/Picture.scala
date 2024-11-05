@@ -34,6 +34,7 @@ object Picture {
   }
 
   def rectangle(w: Double, h: Double): VectorPicture = new RectPicture(w, h)
+  def ellipse(rx: Double, ry: Double): VectorPicture = new EllipsePicture(rx, ry)
   def text(msg: String, size: Int, color: java.awt.Color) =
     new TextPicture(msg, size, setGdxColorFromAwtColor(workColor, color))
   def image(fileName: String) = {
@@ -146,8 +147,40 @@ trait RasterPicture extends Picture {
 trait VectorPicture extends Picture {
   protected var penColor: Color = _
   protected var fillColor: Color = _
-  private[picgaming] def realDrawOutlined(shapeRenderer: ShapeRenderer): Unit
-  private[picgaming] def realDrawFilled(shapeRenderer: ShapeRenderer): Unit
+  private[picgaming] def drawVectorShape(renderer: ShapeRenderer): Unit
+
+  private[picgaming] def realDrawOutlined(shapeRenderer: ShapeRenderer): Unit = {
+    if (!showing) return
+    if (opacity < 1) {
+      if (!Gdx.gl.glIsEnabled(GL20.GL_BLEND)) {
+        Gdx.gl.glEnable(GL20.GL_BLEND)
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
+      }
+      shapeRenderer.setColor(penColor.r, penColor.g, penColor.b, opacity.toFloat)
+    }
+    else {
+      shapeRenderer.setColor(penColor)
+    }
+    drawVectorShape(shapeRenderer)
+    // consider resetting shapeRenderer color
+  }
+
+  private[picgaming] def realDrawFilled(shapeRenderer: ShapeRenderer): Unit = {
+    if (!showing) return
+    if (opacity < 1) {
+      if (!Gdx.gl.glIsEnabled(GL20.GL_BLEND)) {
+        Gdx.gl.glEnable(GL20.GL_BLEND)
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
+      }
+      shapeRenderer.setColor(fillColor.r, fillColor.g, fillColor.b, opacity.toFloat)
+    }
+    else {
+      shapeRenderer.setColor(fillColor)
+    }
+    drawVectorShape(shapeRenderer)
+    // consider resetting shapeRenderer color
+  }
+
   private[picgaming] def hasFill: Boolean = fillColor != null
   private[picgaming] def hasPen: Boolean = penColor != null
   setPenColor(java.awt.Color.RED)
@@ -174,21 +207,11 @@ trait VectorPicture extends Picture {
 
 class RectPicture(w: Double, h: Double) extends VectorPicture {
   lazy val bPoly = {
-    val vertices = Array(0f, 0f, w.toFloat, 0, w.toFloat, h.toFloat, 0, h.toFloat)
+    val vertices = Array(0, 0, w.toFloat, 0, w.toFloat, h.toFloat, 0, h.toFloat)
     new Polygon(vertices)
   }
-  private[picgaming] def realDrawOutlined(shapeRenderer: ShapeRenderer): Unit = {
-    if (!showing) return
-    if (opacity < 1) {
-      if (!Gdx.gl.glIsEnabled(GL20.GL_BLEND)) {
-        Gdx.gl.glEnable(GL20.GL_BLEND)
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
-      }
-      shapeRenderer.setColor(penColor.r, penColor.g, penColor.b, opacity.toFloat)
-    }
-    else {
-      shapeRenderer.setColor(penColor)
-    }
+
+  private[picgaming] def drawVectorShape(shapeRenderer: ShapeRenderer): Unit = {
     shapeRenderer.rect(
       x.toFloat,
       y.toFloat,
@@ -201,29 +224,30 @@ class RectPicture(w: Double, h: Double) extends VectorPicture {
       rotation.toFloat
     )
   }
-  private[picgaming] def realDrawFilled(shapeRenderer: ShapeRenderer): Unit = {
-    if (!showing) return
-    if (opacity < 1) {
-      if (!Gdx.gl.glIsEnabled(GL20.GL_BLEND)) {
-        Gdx.gl.glEnable(GL20.GL_BLEND)
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
-      }
-      shapeRenderer.setColor(fillColor.r, fillColor.g, fillColor.b, opacity.toFloat)
-    }
-    else {
-      shapeRenderer.setColor(fillColor)
-    }
-    shapeRenderer.rect(
+}
+
+class EllipsePicture(rx: Double, ry: Double) extends VectorPicture {
+  lazy val bPoly = {
+    val vertices = Array(-rx.toFloat, -ry.toFloat, rx.toFloat, -ry.toFloat, rx.toFloat, ry.toFloat, -rx.toFloat, ry.toFloat)
+    new Polygon(vertices)
+  }
+
+  x = -rx
+  y = -ry
+
+  private[picgaming] def drawVectorShape(shapeRenderer: ShapeRenderer): Unit = {
+    val savedTransform = shapeRenderer.getTransformMatrix.cpy()
+    shapeRenderer.scale(scaleX.toFloat, scaleY.toFloat, 1)
+    shapeRenderer.ellipse(
       x.toFloat,
       y.toFloat,
-      0,
-      0,
-      w.toFloat,
-      h.toFloat,
-      scaleX.toFloat,
-      scaleY.toFloat,
+      rx.toFloat * 2,
+      ry.toFloat * 2,
+//      scaleX.toFloat,
+//      scaleY.toFloat,
       rotation.toFloat
     )
+    shapeRenderer.setTransformMatrix(savedTransform)
   }
 }
 
@@ -279,7 +303,7 @@ class ImagePicture(textureRegion: TextureRegion) extends RasterPicture {
   val bPoly = {
     val w = width
     val h = height
-    val vertices = Array(0f, 0f, w, 0, w, h, 0, h)
+    val vertices = Array(0, 0, w, 0, w, h, 0, h)
     new Polygon(vertices)
   }
 
