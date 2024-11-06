@@ -1,12 +1,19 @@
 package net.kogics.kojo.picgaming
 
 import java.awt.image.BufferedImage
-
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.Texture.TextureFilter
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 
 object ImageConverter {
-  def bufferedImageToTexture(bufferedImage: BufferedImage): Texture = {
+  def textureFromBufferedImage(img: BufferedImage): TextureRegion = {
+    val texture = bufferedImageToRawTexture(img)
+    texture.setFilter(TextureFilter.Linear, TextureFilter.Linear)
+    new TextureRegion(texture)
+  }
+
+  private def bufferedImageToRawTexture(bufferedImage: BufferedImage): Texture = {
     val width = bufferedImage.getWidth
     val height = bufferedImage.getHeight
 

@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.Texture.TextureFilter
 import com.badlogic.gdx.math.Intersector
 import com.badlogic.gdx.math.Polygon
 import com.badlogic.gdx.utils.FloatArray
@@ -39,13 +38,19 @@ object Picture {
     new TextPicture(msg, size, setGdxColorFromAwtColor(workColor, color))
   def image(fileName: String) = {
     val textureRegion = TextureUtils.loadTexture(fileName)
-    new ImagePicture(textureRegion)
+    new ImagePicture(textureRegion, None)
+  }
+  def image(fileName: String, boundary: collection.Seq[Double]) = {
+    val textureRegion = TextureUtils.loadTexture(fileName)
+    new ImagePicture(textureRegion, Some(boundary))
   }
   def image(img: BufferedImage) = {
-    val texture = ImageConverter.bufferedImageToTexture(img)
-    texture.setFilter(TextureFilter.Linear, TextureFilter.Linear)
-    val textureRegion = new TextureRegion(texture)
-    new ImagePicture(textureRegion)
+    val textureRegion = ImageConverter.textureFromBufferedImage(img)
+    new ImagePicture(textureRegion, None)
+  }
+  def image(img: BufferedImage, boundary: collection.Seq[Double]) = {
+    val textureRegion = ImageConverter.textureFromBufferedImage(img)
+    new ImagePicture(textureRegion, Some(boundary))
   }
   def batch(pics: collection.Seq[RasterPicture]): RasterPicture = new BatchPics(pics)
 }
@@ -228,7 +233,8 @@ class RectPicture(w: Double, h: Double) extends VectorPicture {
 
 class EllipsePicture(rx: Double, ry: Double) extends VectorPicture {
   lazy val bPoly = {
-    val vertices = Array(-rx.toFloat, -ry.toFloat, rx.toFloat, -ry.toFloat, rx.toFloat, ry.toFloat, -rx.toFloat, ry.toFloat)
+    val vertices =
+      Array(-rx.toFloat, -ry.toFloat, rx.toFloat, -ry.toFloat, rx.toFloat, ry.toFloat, -rx.toFloat, ry.toFloat)
     new Polygon(vertices)
   }
 
@@ -237,15 +243,17 @@ class EllipsePicture(rx: Double, ry: Double) extends VectorPicture {
 
   private[picgaming] def drawVectorShape(shapeRenderer: ShapeRenderer): Unit = {
     val savedTransform = shapeRenderer.getTransformMatrix.cpy()
+    shapeRenderer.translate(x.toFloat, y.toFloat, 0)
+    shapeRenderer.translate(rx.toFloat, ry.toFloat, 0)
+    shapeRenderer.rotate(0, 0, 1, rotation.toFloat)
     shapeRenderer.scale(scaleX.toFloat, scaleY.toFloat, 1)
+    shapeRenderer.translate(-rx.toFloat, -ry.toFloat, 0)
     shapeRenderer.ellipse(
-      x.toFloat,
-      y.toFloat,
+      0,
+      0,
       rx.toFloat * 2,
       ry.toFloat * 2,
-//      scaleX.toFloat,
-//      scaleY.toFloat,
-      rotation.toFloat
+//      rotation.toFloat
     )
     shapeRenderer.setTransformMatrix(savedTransform)
   }
@@ -296,15 +304,18 @@ class TextPicture(var msg: String, size: Int, color: Color = Color.WHITE) extend
   }
 }
 
-class ImagePicture(textureRegion: TextureRegion) extends RasterPicture {
+class ImagePicture(textureRegion: TextureRegion, boundary: Option[collection.Seq[Double]]) extends RasterPicture {
   val width = textureRegion.getRegionWidth.toFloat
   val height = textureRegion.getRegionHeight.toFloat
 
-  val bPoly = {
-    val w = width
-    val h = height
-    val vertices = Array(0, 0, w, 0, w, h, 0, h)
-    new Polygon(vertices)
+  val bPoly = boundary match {
+    case None =>
+      val w = width
+      val h = height
+      val vertices = Array(0, 0, w, 0, w, h, 0, h)
+      new Polygon(vertices)
+    case Some(b) =>
+      new Polygon(b.map(_.toFloat).toArray)
   }
 
   private[picgaming] def realDraw(batch: SpriteBatch): Unit = {
