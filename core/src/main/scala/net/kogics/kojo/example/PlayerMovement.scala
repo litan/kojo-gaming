@@ -17,8 +17,18 @@ class PlayerMovement extends GdxGame {
 
 class PlayerMovementScreen extends PicGdxScreen {
   drawStage(Color.black)
-  val player = Picture.rectangle(30, 80)
+//  val player = Picture.rectangle(30, 80)
+  val player = Picture.ellipse(150, 200)
+  player.setPenColor(cm.lightBlue)
+  player.setFillColor(cm.lightBlue)
+//  player.rotate(30)
+//  player.scale(2)
+//  val player = Picture.image("blue-sq.png")
   player.draw()
+
+  val player2 = Picture.rectangle(150, 200)
+  player2.draw()
+
 
   animate {
     //    player.showNext(200)

@@ -36,6 +36,7 @@ class PlatformerScreen extends PicGdxScreen {
     def playerPicture(img: BufferedImage) = {
       val pic = Picture.image(img)
       pic.scale(0.8)
+//      pic.setOpacity(0.1)
       pic
     }
 

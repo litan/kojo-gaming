@@ -1,13 +1,17 @@
 cleari()
 //disablePanAndZoom()
 
-val sprite = Picture.image("../../assets/green-pentagon.png")
+// double or float array to be printed
+val doubleArray = true
+
+val assetsDir = "/home/lalit/Downloads/hunted3-assets"
+val sprite = Picture.image(s"$assetsDir/player_run1.png")
 
 draw(sprite)
 
 var points = ArrayBuffer.empty[Point]
 var pointsPic: Picture = Picture.rectangle(0, 0)
-pointsPic.draw
+pointsPic.draw()
 
 def updateBoundary() {
     val pointsPic2 = Picture.fromVertexShape { s =>
@@ -31,7 +35,7 @@ onMouseClick { (x, y) =>
         points.remove(len - 1)
         val pts = points
             .flatMap(pt => Array(pt.x, pt.y))
-            .map(n => s"${n}f")
+            .map(n => if (doubleArray) s"${n}" else s"${n}f")
 
         println(pts.mkString("Array(", ", ", ")"))
         points.append(points.head)
@@ -39,3 +43,5 @@ onMouseClick { (x, y) =>
         points = ArrayBuffer.empty[Point]
     }
 }
+
+activateCanvas()
