@@ -1,13 +1,17 @@
 package net.kogics.kojo.example
 
+import java.awt.image.BufferedImage
+
 import net.kogics.kojo.core.Point
 import net.kogics.kojo.gaming.GdxGame
 import net.kogics.kojo.gaming.KojoUtils._
+import net.kogics.kojo.picgaming.tiles.SpriteSheet
+import net.kogics.kojo.picgaming.tiles.TileWorld
+import net.kogics.kojo.picgaming.tiles.TileXY
+import net.kogics.kojo.picgaming.BatchPics
 import net.kogics.kojo.picgaming.Builtins._
-import net.kogics.kojo.picgaming.{BatchPics, PicGdxScreen, Picture}
-import net.kogics.kojo.picgaming.tiles.{SpriteSheet, TileWorld, TileXY}
-
-import java.awt.image.BufferedImage
+import net.kogics.kojo.picgaming.PicGdxScreen
+import net.kogics.kojo.picgaming.Picture
 
 class Platformer2 extends GdxGame {
   override def create(): Unit = {
@@ -97,13 +101,13 @@ class PlatformerScreen2 extends PicGdxScreen {
     var speedY = -1.0
     var inJump = false
 
-    def step() {
+    def step(): Unit = {
       stepCollisions()
       stepFood()
     }
 
     var goalEnabled = false
-    def stepFood() {
+    def stepFood(): Unit = {
       if (currentPic.collidesWith(halfwayGoal)) {
         halfwayGoal.erase()
         goal.setOpacity(1)
@@ -118,7 +122,7 @@ class PlatformerScreen2 extends PicGdxScreen {
       }
     }
 
-    def stepCollisions() {
+    def stepCollisions(): Unit = {
       if (isKeyPressed(Kc.VK_RIGHT)) {
         facingRight = true
         updateImage(runningRight)
@@ -183,7 +187,7 @@ class PlatformerScreen2 extends PicGdxScreen {
     }
 
     var cb = canvasBounds
-    def scrollIfNeeded() {
+    def scrollIfNeeded(): Unit = {
 //      val threshold = 200
 //      val pos = currentPic.position
 //      if (cb.x + cb.width - pos.x < threshold) {
@@ -196,7 +200,7 @@ class PlatformerScreen2 extends PicGdxScreen {
 //      }
     }
 
-    def updateImage(newPic: BatchPics) {
+    def updateImage(newPic: BatchPics): Unit = {
       if (newPic != currentPic) {
         currentPic.invisible()
         newPic.visible()
@@ -205,7 +209,7 @@ class PlatformerScreen2 extends PicGdxScreen {
       }
     }
 
-    def draw() {
+    def draw(): Unit = {
       stillLeft.drawAndHide()
       runningLeft.drawAndHide()
       runningRight.drawAndHide()
@@ -243,7 +247,7 @@ class PlatformerScreen2 extends PicGdxScreen {
     //    var speedX = 0.0
     var speedY = -2.0
 
-    def step() {
+    def step(): Unit = {
       speedY += gravity
       speedY = math.max(speedY, -10)
       currentPic.translate(0, speedY)
@@ -258,7 +262,7 @@ class PlatformerScreen2 extends PicGdxScreen {
       }
     }
 
-    def updateImage(newPic: BatchPics) {
+    def updateImage(newPic: BatchPics): Unit = {
       if (newPic != currentPic) {
         currentPic.invisible()
         newPic.visible()
@@ -267,7 +271,7 @@ class PlatformerScreen2 extends PicGdxScreen {
       }
     }
 
-    def draw() {
+    def draw(): Unit = {
       currentPic.draw()
     }
   }

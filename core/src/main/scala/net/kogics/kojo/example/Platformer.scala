@@ -90,13 +90,13 @@ class PlatformerScreen extends PicGdxScreen {
     var speedY = -1.0
     var inJump = false
 
-    def step() {
+    def step(): Unit = {
       stepCollisions()
       stepFood()
     }
 
     var goalEnabled = false
-    def stepFood() {
+    def stepFood(): Unit = {
       if (currentPic.collidesWith(halfwayGoal)) {
         halfwayGoal.erase()
         goal.setOpacity(1)
@@ -111,7 +111,7 @@ class PlatformerScreen extends PicGdxScreen {
       }
     }
 
-    def stepCollisions() {
+    def stepCollisions(): Unit = {
       if (isKeyPressed(Kc.VK_RIGHT)) {
         facingRight = true
         updateImage(runningRight)
@@ -176,7 +176,7 @@ class PlatformerScreen extends PicGdxScreen {
     }
 
     var cb = canvasBounds
-    def scrollIfNeeded() {
+    def scrollIfNeeded(): Unit = {
       val threshold = 200
       val pos = currentPic.position
       if (cb.x + cb.width - pos.x < threshold) {
@@ -189,7 +189,7 @@ class PlatformerScreen extends PicGdxScreen {
       }
     }
 
-    def updateImage(newPic: BatchPics) {
+    def updateImage(newPic: BatchPics): Unit = {
       if (newPic != currentPic) {
         currentPic.invisible()
         newPic.visible()
@@ -198,7 +198,7 @@ class PlatformerScreen extends PicGdxScreen {
       }
     }
 
-    def draw() {
+    def draw(): Unit = {
       stillLeft.drawAndHide()
       runningLeft.drawAndHide()
       runningRight.drawAndHide()
@@ -234,7 +234,7 @@ class PlatformerScreen extends PicGdxScreen {
     //    var speedX = 0.0
     var speedY = -2.0
 
-    def step() {
+    def step(): Unit = {
       speedY += gravity
       speedY = math.max(speedY, -10)
       currentPic.translate(0, speedY)
@@ -249,7 +249,7 @@ class PlatformerScreen extends PicGdxScreen {
       }
     }
 
-    def updateImage(newPic: BatchPics) {
+    def updateImage(newPic: BatchPics): Unit = {
       if (newPic != currentPic) {
         currentPic.invisible()
         newPic.visible()
@@ -258,7 +258,7 @@ class PlatformerScreen extends PicGdxScreen {
       }
     }
 
-    def draw() {
+    def draw(): Unit = {
       currentPic.draw()
     }
   }
