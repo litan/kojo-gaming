@@ -29,4 +29,8 @@ dependencies {
   implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
   compileOnly "org.scala-lang:scala-library:$scalaVersion"
   compileOnly files(downloadKojoLib)
+  testImplementation "org.scalameta:munit_2.13:1.0.2"
+  testImplementation files(downloadKojoLib)
+//  testImplementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
+//  testImplementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
 }

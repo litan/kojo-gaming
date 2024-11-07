@@ -27,6 +27,7 @@ dependencies {
   implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
   implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
   implementation project(':core')
+  compileOnly "org.scala-lang:scala-library:$scalaVersion"
 }
 
 def os = System.properties['os.name'].toLowerCase()
