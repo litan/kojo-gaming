@@ -55,25 +55,15 @@ object Picture {
   def batch(pics: collection.Seq[RasterPicture]): RasterPicture = new BatchPics(pics)
 }
 
-trait PictureShowHide {
-  var showing = true
-
-  def visible(): Unit = {
-    showing = true
-  }
-
-  def invisible(): Unit = {
-    showing = false
-  }
-}
-
-trait Picture extends PictureShowHide {
+trait Picture {
   protected var x = 0.0
   protected var y = 0.0
   protected var rotation = 0.0 // radians
   protected var scaleX = 1.0
   protected var scaleY = 1.0
   protected var opacity = 1.0
+  protected var showing = true
+
   def bPoly: Polygon
   def boundaryPolygon: Polygon = {
     val bP = bPoly
@@ -86,6 +76,14 @@ trait Picture extends PictureShowHide {
 
   def draw(): Unit = {
     Picture.stage.addPicture(this)
+  }
+
+  def visible(): Unit = {
+    showing = true
+  }
+
+  def invisible(): Unit = {
+    showing = false
   }
 
   def drawAndHide(): Unit = {
@@ -152,6 +150,8 @@ trait RasterPicture extends Picture {
 trait VectorPicture extends Picture {
   protected var penColor: Color = _
   protected var fillColor: Color = _
+  protected var penThickness = 2
+
   private[picgaming] def drawVectorShape(renderer: ShapeRenderer): Unit
 
   private[picgaming] def realDrawOutlined(shapeRenderer: ShapeRenderer): Unit = {
@@ -166,8 +166,9 @@ trait VectorPicture extends Picture {
     else {
       shapeRenderer.setColor(penColor)
     }
+    Gdx.gl.glLineWidth(penThickness.toFloat)
     drawVectorShape(shapeRenderer)
-    // consider resetting shapeRenderer color
+    // consider resetting shapeRenderer color and gl line width
   }
 
   private[picgaming] def realDrawFilled(shapeRenderer: ShapeRenderer): Unit = {
@@ -207,6 +208,9 @@ trait VectorPicture extends Picture {
       fillColor = if (fillColor == null) new Color() else fillColor
       Picture.setGdxColorFromAwtColor(fillColor, c)
     }
+  }
+  def setPenThickness(t: Int): Unit = {
+    penThickness = t
   }
 }
 
