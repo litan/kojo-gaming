@@ -1,5 +1,6 @@
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
+import com.badlogic.gdx.graphics.Color
 
 import net.kogics.kojo.gaming.lwjgl3.StartupHelper
 
@@ -20,6 +21,7 @@ object Launcher {
         configuration.setForegroundFPS(Lwjgl3ApplicationConfiguration.getDisplayMode().refreshRate)
         configuration.setWindowedMode(800, 800)
         configuration.setWindowIcon("libgdx128.png", "libgdx64.png", "libgdx32.png", "libgdx16.png")
+        configuration.setInitialBackgroundColor(Color.WHITE)
         configuration;
     }
 }
