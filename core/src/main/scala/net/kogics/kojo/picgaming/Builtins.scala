@@ -12,6 +12,23 @@ import net.kogics.kojo.util.Utils
 import net.kogics.kojo.util.Vector2D
 
 object Builtins {
+  val blue = Color.blue
+  val red = Color.red
+  val yellow = Color.yellow
+  val green = Color.green
+  val orange = Color.orange
+  val purple = new Color(0x740f73)
+  val pink = Color.pink
+  val brown = new Color(0x583a0b)
+  val black = Color.black
+  val white = Color.white
+  val gray = Color.gray
+  val lightGray = Color.lightGray
+  val darkGray = Color.darkGray
+  val darkGrayClassic = Color.darkGray
+  val magenta = Color.magenta
+  val cyan = Color.cyan
+
   var stageBorder: VectorPicture = _
   var stageBot: VectorPicture = _
   var stageTop: VectorPicture = _
