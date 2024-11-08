@@ -18,13 +18,14 @@ import net.kogics.kojo.gaming.WorldBounds
 import net.kogics.kojo.picgaming.Builtins._
 
 abstract class PicGdxScreen extends Screen with InputProcessor {
+  WorldBounds.set(Gdx.graphics.getWidth, Gdx.graphics.getHeight)
+  Builtins.screen = this
   val stage = new PicGdxStage()
   Picture.stage = stage
   val shapeRenderer = new ShapeRenderer()
   val spriteBatch = new SpriteBatch()
   var paused = false
   var bgColor: GdxColor = GdxColor.WHITE.cpy()
-  WorldBounds.set(Gdx.graphics.getWidth, Gdx.graphics.getHeight)
   val camera = new OrthographicCamera(WorldBounds.width, WorldBounds.height)
   camera.position.set(0, 0, 0)
 
@@ -198,8 +199,7 @@ abstract class PicGdxScreen extends Screen with InputProcessor {
 
   def drawCenteredMessage(message: String, color: Color = cm.black, fontSize: Int = 15): Unit = {
     val pic = Picture.text(message, fontSize, color)
-    pic.translate(-pic.width.toDouble / 2, pic.height.toDouble / 2)
-    pic.draw()
+    drawCentered(pic)
   }
 
 }

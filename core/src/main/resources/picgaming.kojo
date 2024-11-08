@@ -16,10 +16,10 @@ object Launcher {
 
     def defaultConfig = {
         val configuration = new Lwjgl3ApplicationConfiguration()
-        configuration.setTitle("Snake Game")
+        configuration.setTitle("Picture Gaming App")
         configuration.useVsync(true)
         configuration.setForegroundFPS(Lwjgl3ApplicationConfiguration.getDisplayMode().refreshRate)
-        configuration.setWindowedMode(800, 800)
+        configuration.setWindowedMode(935, 645)
         configuration.setWindowIcon("libgdx128.png", "libgdx64.png", "libgdx32.png", "libgdx16.png")
         configuration.setInitialBackgroundColor(Color.WHITE)
         configuration;

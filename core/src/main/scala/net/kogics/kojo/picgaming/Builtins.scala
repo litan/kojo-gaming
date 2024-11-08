@@ -12,6 +12,7 @@ import net.kogics.kojo.util.Utils
 import net.kogics.kojo.util.Vector2D
 
 object Builtins {
+  var screen: PicGdxScreen = _
   val blue = Color.blue
   val red = Color.red
   val yellow = Color.yellow
@@ -29,35 +30,50 @@ object Builtins {
   val magenta = Color.magenta
   val cyan = Color.cyan
 
+  val HashMap = collection.mutable.HashMap
+  type HashMap[K, V] = collection.mutable.HashMap[K, V]
+
+  val HashSet = collection.mutable.HashSet
+  type HashSet[V] = collection.mutable.HashSet[V]
+
+  val ArrayBuffer = collection.mutable.ArrayBuffer
+  type ArrayBuffer[V] = collection.mutable.ArrayBuffer[V]
+
   var stageBorder: VectorPicture = _
   var stageBot: VectorPicture = _
   var stageTop: VectorPicture = _
   var stageLeft: VectorPicture = _
   var stageRight: VectorPicture = _
 
-  private val bottomLeft = new Vector2(-WorldBounds.width / 2, -WorldBounds.height / 2)
-  private val topLeft = new Vector2(-WorldBounds.width / 2, WorldBounds.height / 2)
-  private val topRight = new Vector2(WorldBounds.width / 2, WorldBounds.height / 2)
-  private val bottomRight = new Vector2(WorldBounds.width / 2, -WorldBounds.height / 2)
+  private var bottomLeft = new Vector2(-WorldBounds.width / 2, -WorldBounds.height / 2)
+  private var topLeft = new Vector2(-WorldBounds.width / 2, WorldBounds.height / 2)
+  private var topRight = new Vector2(WorldBounds.width / 2, WorldBounds.height / 2)
+  private var bottomRight = new Vector2(WorldBounds.width / 2, -WorldBounds.height / 2)
 
   def drawStage(color: java.awt.Color): Unit = {
-    stageBorder = Picture.rectangle(WorldBounds.width, WorldBounds.height)
+    val cb = screen.canvasBounds
+    bottomLeft.set(cb.x.toFloat, cb.y.toFloat)
+    bottomRight.set(cb.x.toFloat + cb.width.toFloat, cb.y.toFloat)
+    topLeft.set(cb.x.toFloat, cb.y.toFloat + cb.height.toFloat)
+    topRight.set(cb.x.toFloat + cb.width.toFloat, cb.y.toFloat + cb.height.toFloat)
+
+    stageBorder = Picture.rectangle(cb.width, cb.height)
     stageBorder.setFillColor(color)
     stageBorder.setPenColor(null)
     stageBorder.setPosition(bottomLeft.x, bottomLeft.y)
     stageBorder.draw()
 
     // the 0 width/height of these rects can be made 1e-6 or something if 0 causes a problem
-    stageBot = Picture.rectangle(WorldBounds.width, 0)
+    stageBot = Picture.rectangle(cb.width, 0)
     stageBot.setPosition(bottomLeft.x, bottomLeft.y)
 
-    stageTop = Picture.rectangle(WorldBounds.width, 0)
+    stageTop = Picture.rectangle(cb.width, 0)
     stageTop.setPosition(topLeft.x, topLeft.y)
 
-    stageLeft = Picture.rectangle(0, WorldBounds.height)
+    stageLeft = Picture.rectangle(0, cb.height)
     stageLeft.setPosition(bottomLeft.x, bottomLeft.y)
 
-    stageRight = Picture.rectangle(0, WorldBounds.height)
+    stageRight = Picture.rectangle(0, cb.height)
     stageRight.setPosition(bottomRight.x, bottomRight.y)
   }
 
