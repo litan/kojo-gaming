@@ -61,6 +61,13 @@ abstract class PicGdxScreen extends Screen with InputProcessor {
         }
       case None =>
     }
+    // fps on top left
+    fpsInfo match {
+      case Some(finfo) =>
+        val fps = Gdx.graphics.getFramesPerSecond
+        finfo.pic.setText(s"Fps: $fps")
+      case None =>
+    }
   }
 
   override def render(dt: Float): Unit = {
@@ -145,10 +152,12 @@ abstract class PicGdxScreen extends Screen with InputProcessor {
   }
 
   case class GameTimeInfo(pic: TextPicture, limit: Int, endMsg: String)
+  case class FpsInfo(pic: TextPicture)
 
   var gameTimeInfo: Option[GameTimeInfo] = None
   var gameTime = 0f
   def gameTimeString: String = gameTime.toInt.toString
+  var fpsInfo: Option[FpsInfo] = None
 
   def showGameTime(
       limitSecs: Int,
@@ -161,8 +170,17 @@ abstract class PicGdxScreen extends Screen with InputProcessor {
   ): Unit = {
     val pic = Picture.text(gameTimeString, fontSize, color)
     gameTimeInfo = Some(GameTimeInfo(pic, limitSecs, endMsg))
-    pic.setPosition(-WorldBounds.width / 2 + dx, -WorldBounds.height / 2 + dy)
+    val cb = canvasBounds
+    pic.setPosition(cb.x + dx, cb.y + dy)
     pic.draw()
+  }
+
+  def showFps(color: Color = black, fontSize: Int = 15): Unit = {
+    val fpsLabel = Picture.text("Fps: ", fontSize, color)
+    fpsInfo = Some(FpsInfo(fpsLabel))
+    val cb = canvasBounds
+    fpsLabel.setPosition(cb.x + 10, cb.y + cb.height - 10)
+    fpsLabel.draw()
   }
 
   def scroll(x: Double, y: Double): Unit = {
