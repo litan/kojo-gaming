@@ -151,14 +151,14 @@ object Builtins {
 
   case class Bounds(x: Double, y: Double, width: Double, height: Double)
 
-  def drawCenteredMessage(message: String, color: Color = cm.black, fontSize: Int = 15): Unit = {
-    val pic = Picture.text(message, fontSize, color)
-    pic.translate(-pic.width.toDouble / 2, pic.height.toDouble / 2)
-    pic.draw()
-  }
-
   def activateCanvas(): Unit = {}
 
   def picBatch(pics: RasterPicture*): BatchPics = new BatchPics(pics.toSeq)
   def picBatch(pics: collection.Seq[RasterPicture]): BatchPics = new BatchPics(pics.toSeq)
+
+  def epochTimeMillis = System.currentTimeMillis()
+  def epochTime = System.currentTimeMillis() / 1000.0
+
+  def draw(pic: Picture) = pic.draw()
+  def drawAndHide(pic: Picture) = pic.drawAndHide()
 }

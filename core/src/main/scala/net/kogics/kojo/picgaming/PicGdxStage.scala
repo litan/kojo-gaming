@@ -30,6 +30,10 @@ class PicGdxStage {
     }
   }
 
+  def clear(): Unit = {
+    pictures.clear()
+  }
+
   def filledPictures: ArrayBuffer[VectorPicture] = pictures.collect {
     case p: VectorPicture if p.hasFill => p
   }

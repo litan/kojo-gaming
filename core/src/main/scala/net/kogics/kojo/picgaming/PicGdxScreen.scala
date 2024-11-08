@@ -2,6 +2,7 @@ package net.kogics.kojo.picgaming
 
 import java.awt.Color
 
+import com.badlogic.gdx.graphics.{ Color => GdxColor }
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType
@@ -12,6 +13,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.Screen
+import net.kogics.kojo.gaming.Utils
 import net.kogics.kojo.gaming.WorldBounds
 import net.kogics.kojo.picgaming.Builtins._
 
@@ -21,6 +23,7 @@ abstract class PicGdxScreen extends Screen with InputProcessor {
   val shapeRenderer = new ShapeRenderer()
   val spriteBatch = new SpriteBatch()
   var paused = false
+  var bgColor: GdxColor = GdxColor.WHITE.cpy()
   WorldBounds.set(Gdx.graphics.getWidth, Gdx.graphics.getHeight)
   val camera = new OrthographicCamera(WorldBounds.width, WorldBounds.height)
   camera.position.set(0, 0, 0)
@@ -67,7 +70,7 @@ abstract class PicGdxScreen extends Screen with InputProcessor {
 
       update(dt)
 
-      Gdx.gl.glClearColor(1, 1, 1, 1)
+      Gdx.gl.glClearColor(bgColor.r, bgColor.g, bgColor.b, bgColor.a)
       Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
       // draw the pic scene graph
@@ -171,4 +174,32 @@ abstract class PicGdxScreen extends Screen with InputProcessor {
     val p = camera.position
     Bounds(p.x - w / 2, p.y - h / 2, w, h)
   }
+
+  def setBackground(c: Color): Unit = {
+    Utils.setGdxColorFromAwtColor(bgColor, c)
+  }
+
+  def originBottomLeft(): Unit = {
+    val cb = canvasBounds
+    camera.position.set(-cb.x.toFloat, -cb.y.toFloat, 0)
+  }
+
+  def erasePictures(): Unit = {
+    stage.clear()
+  }
+
+  def drawCentered(pic: Picture): Unit = {
+    val cb = canvasBounds; val pb = pic.boundaryPolygon.getBoundingRectangle
+    val xDelta = cb.x - pb.x + (cb.width - pb.width) / 2
+    val yDelta = cb.y - pb.y + (cb.height - pb.height) / 2
+    pic.setPosition(xDelta, yDelta)
+    pic.draw()
+  }
+
+  def drawCenteredMessage(message: String, color: Color = cm.black, fontSize: Int = 15): Unit = {
+    val pic = Picture.text(message, fontSize, color)
+    pic.translate(-pic.width.toDouble / 2, pic.height.toDouble / 2)
+    pic.draw()
+  }
+
 }

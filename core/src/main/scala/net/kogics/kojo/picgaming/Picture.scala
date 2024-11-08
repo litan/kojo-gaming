@@ -17,25 +17,17 @@ import com.badlogic.gdx.utils.TimeUtils
 import com.badlogic.gdx.Gdx
 import net.kogics.kojo.core.Point
 import net.kogics.kojo.gaming.TextureUtils
+import net.kogics.kojo.gaming.Utils
 import net.kogics.kojo.util.Vector2D
 
 object Picture {
   var stage: PicGdxStage = _
   private var workColor = new Color()
 
-  private[picgaming] def setGdxColorFromAwtColor(gdxColor: Color, awtColor: java.awt.Color): Color = {
-    gdxColor.set(
-      awtColor.getRed / 255f,
-      awtColor.getGreen / 255f,
-      awtColor.getBlue / 255f,
-      awtColor.getAlpha / 255f
-    )
-  }
-
   def rectangle(w: Double, h: Double): VectorPicture = new RectPicture(w, h)
   def ellipse(rx: Double, ry: Double): VectorPicture = new EllipsePicture(rx, ry)
-  def text(msg: String, size: Int, color: java.awt.Color) =
-    new TextPicture(msg, size, setGdxColorFromAwtColor(workColor, color))
+  def text(msg: String, size: Int, color: java.awt.Color = java.awt.Color.RED) =
+    new TextPicture(msg, size, Utils.setGdxColorFromAwtColor(workColor, color))
   def image(fileName: String) = {
     val textureRegion = TextureUtils.loadTexture(fileName)
     new ImagePicture(textureRegion, None)
@@ -197,7 +189,7 @@ trait VectorPicture extends Picture {
     }
     else {
       penColor = if (penColor == null) new Color() else penColor
-      Picture.setGdxColorFromAwtColor(penColor, c)
+      Utils.setGdxColorFromAwtColor(penColor, c)
     }
   }
   def setFillColor(c: java.awt.Color): Unit = {
@@ -206,7 +198,7 @@ trait VectorPicture extends Picture {
     }
     else {
       fillColor = if (fillColor == null) new Color() else fillColor
-      Picture.setGdxColorFromAwtColor(fillColor, c)
+      Utils.setGdxColorFromAwtColor(fillColor, c)
     }
   }
   def setPenThickness(t: Int): Unit = {
@@ -284,7 +276,7 @@ class TextPicture(var msg: String, size: Int, color: Color = Color.WHITE) extend
   val bPoly = {
     val w = width
     val h = height
-    val vertices = Array(0f, 0f, w, 0, w, h, 0, h)
+    val vertices = Array(0f, 0f, w, 0, w, -h, 0, -h)
     new Polygon(vertices)
   }
 
@@ -300,7 +292,13 @@ class TextPicture(var msg: String, size: Int, color: Color = Color.WHITE) extend
       font.setColor(clr.r, clr.g, clr.b, opacity.toFloat)
     }
 
-    font.draw(batch, msg, x.toFloat, y.toFloat)
+    val savedTransform = batch.getTransformMatrix.cpy();
+    batch.getTransformMatrix.translate(x.toFloat, y.toFloat, 0f)
+    batch.getTransformMatrix.rotate(0, 0, 1, rotation.toFloat)
+    batch.getTransformMatrix.scale(scaleX.toFloat, scaleY.toFloat, 1)
+    batch.setTransformMatrix(batch.getTransformMatrix)
+    font.draw(batch, msg, 0, 0)
+    batch.setTransformMatrix(savedTransform)
 
     if (opacity < 1) {
       font.setColor(clr)
