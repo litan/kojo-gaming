@@ -2,6 +2,8 @@ package net.kogics.kojo.picgaming
 
 import java.awt.image.BufferedImage
 
+import scala.collection.mutable.ArrayBuffer
+
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -133,6 +135,28 @@ trait Picture {
   def setOpacity(o: Double): Unit = {
     opacity = o
   }
+
+  protected def closenessScaleFactor(bp: Polygon, distance: Double): (Float, Float) = {
+    val bounds = bp.getBoundingRectangle
+    val w = bounds.width
+    val h = bounds.height
+    val scaleX = (w + distance.toFloat) / w
+    val scaleY = (h + distance.toFloat) / h
+    (scaleX, scaleY)
+  }
+
+  def isCloser(other: Picture, distance: Double): Boolean = {
+    val poly1 = boundaryPolygon
+    val (scaleX, scaleY) = closenessScaleFactor(poly1, distance)
+    poly1.setScale(poly1.getScaleX * scaleX, poly1.getScaleY * scaleY)
+    val poly2 = other.boundaryPolygon
+    if (poly1.getBoundingRectangle.overlaps(poly2.getBoundingRectangle)) {
+      Intersector.overlapConvexPolygons(poly1, poly2)
+    }
+    else {
+      false
+    }
+  }
 }
 
 trait RasterPicture extends Picture {
@@ -229,29 +253,37 @@ class RectPicture(w: Double, h: Double) extends VectorPicture {
 
 class EllipsePicture(rx: Double, ry: Double) extends VectorPicture {
   lazy val bPoly = {
-    val vertices =
-      Array(-rx.toFloat, -ry.toFloat, rx.toFloat, -ry.toFloat, rx.toFloat, ry.toFloat, -rx.toFloat, ry.toFloat)
-    new Polygon(vertices)
+    val vertices = ArrayBuffer.empty[Float]
+    def x(t: Double) = rx * math.cos(t.toRadians)
+    def y(t: Double) = ry * math.sin(t.toRadians)
+    for (i <- 1 to 360) {
+      vertices.append(x(i).toFloat)
+      vertices.append(y(i).toFloat)
+    }
+    new Polygon(vertices.toArray)
   }
-
-  x = -rx
-  y = -ry
 
   private[picgaming] def drawVectorShape(shapeRenderer: ShapeRenderer): Unit = {
     val savedTransform = shapeRenderer.getTransformMatrix.cpy()
     shapeRenderer.translate(x.toFloat, y.toFloat, 0)
-    shapeRenderer.translate(rx.toFloat, ry.toFloat, 0)
     shapeRenderer.rotate(0, 0, 1, rotation.toFloat)
     shapeRenderer.scale(scaleX.toFloat, scaleY.toFloat, 1)
-    shapeRenderer.translate(-rx.toFloat, -ry.toFloat, 0)
     shapeRenderer.ellipse(
-      0,
-      0,
+      -rx.toFloat,
+      -ry.toFloat,
       rx.toFloat * 2,
-      ry.toFloat * 2,
-//      rotation.toFloat
+      ry.toFloat * 2
     )
     shapeRenderer.setTransformMatrix(savedTransform)
+  }
+
+  protected override def closenessScaleFactor(bp: Polygon, distance: Double): (Float, Float) = {
+    val bounds = bp.getBoundingRectangle
+    val w = bounds.width
+    val h = bounds.height
+    val scaleX = (w + 2 * distance.toFloat) / w
+    val scaleY = (h + 2 * distance.toFloat) / h
+    (scaleX, scaleY)
   }
 }
 

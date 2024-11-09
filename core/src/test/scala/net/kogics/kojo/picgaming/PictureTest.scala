@@ -26,11 +26,67 @@ class PictureTests extends munit.FunSuite {
   }
 
   test("Picture batch boundary polygons".ignore) {
+    // todo with stub raster pics later
     val pic1 = Picture.image("../assets/green-sq.png")
     val pic2 = Picture.image("../assets/green-sq.png")
     val pic = Builtins.picBatch(pic1, pic2)
     val b1 = pic.boundaryPolygon.getTransformedVertices.toList
     println(b1)
     assert(true)
+  }
+
+  test("Rectangle picture closeness") {
+    val pic1 = Picture.rectangle(50, 50)
+    val pic2 = Picture.rectangle(50, 50)
+    pic2.setPosition(100, 0)
+    // gap between them is now 50
+    assert(!pic1.isCloser(pic2, 50))
+    assert(pic1.isCloser(pic2, 50.1))
+  }
+
+  test("Ellipse picture closeness") {
+    val pic1 = Picture.ellipse(50, 50)
+    val pic2 = Picture.ellipse(50, 50)
+    pic2.setPosition(150, 0)
+    // gap between them is now 50
+    assert(!pic1.isCloser(pic2, 50))
+    assert(pic1.isCloser(pic2, 50.1))
+  }
+
+  test("Rectangle picture closeness with scaling") {
+    val pic1 = Picture.rectangle(50, 50)
+    pic1.scale(1.1)
+    val pic2 = Picture.rectangle(50, 50)
+    pic2.setPosition(100, 0)
+    // gap between them is now less than 50
+    assert(pic1.isCloser(pic2, 50))
+  }
+
+  test("Ellipse picture closeness with scaling") {
+    val pic1 = Picture.ellipse(50, 50)
+    pic1.scale(1.1)
+    val pic2 = Picture.ellipse(50, 50)
+    pic2.setPosition(150, 0)
+    // gap between them is now less than 50
+    assert(pic1.isCloser(pic2, 50))
+  }
+
+  test("Rectangle picture closeness with rotation") {
+    val pic1 = Picture.rectangle(50, 50)
+    pic1.rotate(5)
+    val pic2 = Picture.rectangle(50, 50)
+    pic2.setPosition(100, 0)
+    // gap between them is now greater than 50
+    assert(!pic1.isCloser(pic2, 50.1))
+  }
+
+  test("Ellipse picture closeness with rotation") {
+    val pic1 = Picture.ellipse(50, 50)
+    pic1.rotate(5)
+    val pic2 = Picture.ellipse(50, 50)
+    pic2.setPosition(150, 0)
+    // gap between them is now still 50
+    assert(!pic1.isCloser(pic2, 50))
+    assert(pic1.isCloser(pic2, 50.1))
   }
 }
