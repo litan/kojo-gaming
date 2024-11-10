@@ -220,4 +220,7 @@ abstract class PicGdxScreen extends Screen with InputProcessor {
     drawCentered(pic)
   }
 
+  def frameDeltaTime: Double = Gdx.graphics.getDeltaTime()
+  def pause(seconds: Double) = pauseMillis((seconds * 1000).toLong)
+  def pauseMillis(milliSeconds: Long) = Thread.sleep(milliSeconds)
 }
