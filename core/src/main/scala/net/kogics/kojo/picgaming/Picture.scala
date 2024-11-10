@@ -28,6 +28,7 @@ object Picture {
 
   def rectangle(w: Double, h: Double): VectorPicture = new RectPicture(w, h)
   def ellipse(rx: Double, ry: Double): VectorPicture = new EllipsePicture(rx, ry)
+  def circle(r: Double): VectorPicture = ellipse(r, r)
   def text(msg: String, size: Int, color: java.awt.Color = java.awt.Color.RED) =
     new TextPicture(msg, size, Utils.setGdxColorFromAwtColor(workColor, color))
   def image(fileName: String) = {
