@@ -178,6 +178,6 @@ object Builtins {
   def epochTimeMillis = System.currentTimeMillis()
   def epochTime = System.currentTimeMillis() / 1000.0
 
-  def draw(pic: Picture) = pic.draw()
-  def drawAndHide(pic: Picture) = pic.drawAndHide()
+  def draw(pictures: Picture*) = pictures.foreach { p => p.draw() }
+  def drawAndHide(pictures: Picture*) = pictures.foreach { p => p.drawAndHide() }
 }
