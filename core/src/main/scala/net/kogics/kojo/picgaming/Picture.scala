@@ -1,6 +1,7 @@
 package net.kogics.kojo.picgaming
 
 import java.awt.image.BufferedImage
+import java.awt.Image
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -39,12 +40,12 @@ object Picture {
     val textureRegion = TextureUtils.loadTexture(fileName)
     new ImagePicture(textureRegion, Some(boundary))
   }
-  def image(img: BufferedImage) = {
-    val textureRegion = ImageConverter.textureFromBufferedImage(img)
+  def image(img: Image) = {
+    val textureRegion = ImageConverter.textureFromBufferedImage(img.asInstanceOf[BufferedImage])
     new ImagePicture(textureRegion, None)
   }
-  def image(img: BufferedImage, boundary: collection.Seq[Double]) = {
-    val textureRegion = ImageConverter.textureFromBufferedImage(img)
+  def image(img: Image, boundary: collection.Seq[Double]) = {
+    val textureRegion = ImageConverter.textureFromBufferedImage(img.asInstanceOf[BufferedImage])
     new ImagePicture(textureRegion, Some(boundary))
   }
   def batch(pics: collection.Seq[RasterPicture]): RasterPicture = new BatchPics(pics)
@@ -102,6 +103,8 @@ trait Picture {
     y += dy
   }
   def translate(vel: Vector2D): Unit = translate(vel.x, vel.y)
+  def offset(dx: Double, dy: Double): Unit = translate(dx, dy)
+  def offset(vel: Vector2D): Unit = translate(vel.x, vel.y)
 
   def rotate(a: Double): Unit = {
     rotation += a
@@ -406,6 +409,8 @@ class BatchPics(pics: collection.Seq[RasterPicture]) extends RasterPicture {
       lastIndexChange = currTime
     }
   }
+
+  def showNext(): Unit = showNext(100)
 
   def bPoly: Polygon = new Polygon(pics(currPicIndex).boundaryPolygon.getTransformedVertices)
 }

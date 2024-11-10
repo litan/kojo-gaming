@@ -5,6 +5,7 @@ import scala.language.implicitConversions
 
 import com.badlogic.gdx.math.Intersector
 import com.badlogic.gdx.math.Vector2
+import net.kogics.kojo.core
 import net.kogics.kojo.doodle
 import net.kogics.kojo.gaming.WorldBounds
 import net.kogics.kojo.staging
@@ -180,4 +181,7 @@ object Builtins {
 
   def draw(pictures: Picture*) = pictures.foreach { p => p.draw() }
   def drawAndHide(pictures: Picture*) = pictures.foreach { p => p.drawAndHide() }
+
+  type Point = core.Point
+  val Point = core.Point
 }

@@ -27,12 +27,16 @@ object Launcher {
 }
 
 import java.awt.Color
+import java.awt.Image
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.ArrayBuffer
 import net.kogics.kojo.gaming.GdxGame
 import net.kogics.kojo.gaming.KojoUtils._
 import net.kogics.kojo.picgaming.Builtins._
 import net.kogics.kojo.picgaming.{BatchPics, PicGdxScreen, Picture}
+import net.kogics.kojo.picgaming.tiles.SpriteSheet
+import net.kogics.kojo.picgaming.tiles.TileWorld
+import net.kogics.kojo.picgaming.tiles.TileXY
 import net.kogics.kojo.util.Vector2D
 
 
