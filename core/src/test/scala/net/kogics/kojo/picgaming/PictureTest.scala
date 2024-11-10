@@ -76,7 +76,7 @@ class PictureTests extends munit.FunSuite {
     pic1.rotate(5)
     val pic2 = Picture.rectangle(50, 50)
     pic2.setPosition(100, 0)
-    // gap between them is now greater than 50
+    // gap between them is now greater than 50.1
     assert(!pic1.isCloser(pic2, 50.1))
   }
 

@@ -134,6 +134,9 @@ object Builtins {
     }
   }
 
+  def bouncePicVectorOffStage(p: Picture, vel: Vector2D): Vector2D = bouncePicOffStage(p, vel)
+  def bouncePicVectorOffPic(p1: Picture, vel: Vector2D, p2: Picture): Vector2D = bouncePicOffPic(p1, vel, p2)
+
   def bouncePicOffPicBoth(p1: Picture, vel: Vector2D, p2: Picture, vel2: Vector2D): (Vector2D, Vector2D) = {
     avoidOverlap(p1, p2).map { mtvNormal =>
       val restitution = 1f
