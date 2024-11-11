@@ -48,7 +48,9 @@ object Picture {
     val textureRegion = ImageConverter.textureFromBufferedImage(img.asInstanceOf[BufferedImage])
     new ImagePicture(textureRegion, Some(boundary))
   }
-  def batch(pics: collection.Seq[RasterPicture]): RasterPicture = new BatchPics(pics)
+
+  def batch(pics: RasterPicture*): BatchPics = new BatchPics(pics)
+  def batch(pics: collection.Seq[RasterPicture]): BatchPics = new BatchPics(pics)
 }
 
 trait Picture {
@@ -309,7 +311,7 @@ class TextPicture(var msg: String, size: Int, color: Color = Color.WHITE) extend
   val width = layout.width
   val height = layout.height
 
-  val bPoly = {
+  lazy val bPoly = {
     val w = width
     val h = height
     val vertices = Array(0f, 0f, w, 0, w, -h, 0, -h)
@@ -346,7 +348,7 @@ class ImagePicture(textureRegion: TextureRegion, boundary: Option[collection.Seq
   val width = textureRegion.getRegionWidth.toFloat
   val height = textureRegion.getRegionHeight.toFloat
 
-  val bPoly = boundary match {
+  lazy val bPoly = boundary match {
     case None =>
       val w = width
       val h = height
@@ -382,6 +384,18 @@ class ImagePicture(textureRegion: TextureRegion, boundary: Option[collection.Seq
     }
   }
 }
+
+class StubRasterPicture(w: Double, h: Double) extends RasterPicture {
+  lazy val bPoly = {
+    val vertices = Array(0, 0, w.toFloat, 0, w.toFloat, h.toFloat, 0, h.toFloat)
+    new Polygon(vertices)
+  }
+
+  private[picgaming] def realDraw(batch: SpriteBatch): Unit = {
+    // do nothing
+  }
+}
+
 
 class BatchPics(pics: collection.Seq[RasterPicture]) extends RasterPicture {
   private var currPicIndex = 0

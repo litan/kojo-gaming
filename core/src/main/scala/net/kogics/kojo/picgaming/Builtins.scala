@@ -173,8 +173,8 @@ object Builtins {
 
   def activateCanvas(): Unit = {}
 
-  def picBatch(pics: RasterPicture*): BatchPics = new BatchPics(pics.toSeq)
-  def picBatch(pics: collection.Seq[RasterPicture]): BatchPics = new BatchPics(pics.toSeq)
+  def picBatch(pics: RasterPicture*): BatchPics = Picture.batch(pics)
+  def picBatch(pics: collection.Seq[RasterPicture]): BatchPics = Picture.batch(pics)
 
   def epochTimeMillis = System.currentTimeMillis()
   def epochTime = System.currentTimeMillis() / 1000.0

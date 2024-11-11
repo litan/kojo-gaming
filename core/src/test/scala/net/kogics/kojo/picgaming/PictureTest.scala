@@ -25,14 +25,43 @@ class PictureTests extends munit.FunSuite {
     assertEquals(b3, List(10f, 10, 210, 10, 210, 210, 10, 210))
   }
 
-  test("Picture batch boundary polygons".ignore) {
-    // todo with stub raster pics later
-    val pic1 = Picture.image("../assets/green-sq.png")
-    val pic2 = Picture.image("../assets/green-sq.png")
-    val pic = Builtins.picBatch(pic1, pic2)
+  test("Picture batch boundary polygons") {
+    val pic1 = new StubRasterPicture(100, 100)
+    val pic2 = new StubRasterPicture(50, 50)
+    val pic = Picture.batch(pic1, pic2)
     val b1 = pic.boundaryPolygon.getTransformedVertices.toList
-    println(b1)
-    assert(true)
+    assertEquals(b1, List(0f, 0, 100, 0, 100, 100, 0, 100))
+    Thread.sleep(15)
+    pic.showNext(10)
+    val b2 = pic.boundaryPolygon.getTransformedVertices.toList
+    assertEquals(b2, List(0f, 0, 50, 0, 50, 50, 0, 50))
+  }
+
+  test("Picture batch boundary polygons after translating batch") {
+    val pic1 = new StubRasterPicture(100, 100)
+    val pic2 = new StubRasterPicture(50, 50)
+    val pic = Picture.batch(pic1, pic2)
+    pic.translate(10, 10)
+    val b1 = pic.boundaryPolygon.getTransformedVertices.toList
+    assertEquals(b1, List(10f, 10, 110, 10, 110, 110, 10, 110))
+    Thread.sleep(15)
+    pic.showNext(10)
+    val b2 = pic.boundaryPolygon.getTransformedVertices.toList
+    assertEquals(b2, List(10f, 10, 60, 10, 60, 60, 10, 60))
+  }
+
+  test("Picture batch boundary polygons after translating batch pics") {
+    val pic1 = new StubRasterPicture(100, 100)
+    val pic2 = new StubRasterPicture(50, 50)
+    val pic = Picture.batch(pic1, pic2)
+    pic1.translate(10, 10)
+    pic2.translate(20, 20)
+    val b1 = pic.boundaryPolygon.getTransformedVertices.toList
+    assertEquals(b1, List(10f, 10, 110, 10, 110, 110, 10, 110))
+    Thread.sleep(15)
+    pic.showNext(10)
+    val b2 = pic.boundaryPolygon.getTransformedVertices.toList
+    assertEquals(b2, List(20f, 20, 70, 20, 70, 70, 20, 70))
   }
 
   test("Rectangle picture closeness") {
