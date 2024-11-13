@@ -63,7 +63,7 @@ class HuntedScreen extends PicGdxScreen {
   repeatFor(1 to nh) { n =>
     val pic = hunterPic(n)
     hunters.append(pic)
-    val hv = Vector2D(random(1, 4), random(1, 4))
+    val hv = Vector2D(random(100, 200), random(100, 200))
     huntersVel(pic) = hv
     pic.draw()
   }
@@ -76,8 +76,9 @@ class HuntedScreen extends PicGdxScreen {
   val speed = 5
   animate {
     repeatFor(hunters) { h =>
+      val dt = frameDeltaTime
       var hv = huntersVel(h)
-      h.translate(hv)
+      h.translate(hv * dt)
       if (h.collidesWith(stageBorder)) {
         hv = bouncePicOffStage(h, hv)
         huntersVel(h) = hv
@@ -114,11 +115,12 @@ class HuntedScreen extends PicGdxScreen {
       player.visible()
     }
 
-    if (player.collidesWith(stageBorder)) {
-      gameLost()
-    }
+//    if (player.collidesWith(stageBorder)) {
+//      gameLost()
+//    }
   }
 
-  showGameTime(10, "You Win", cm.white, 25)
+  showGameTime(60, "You Win", cm.white, 25)
+  showFps(white, 30)
   activateCanvas()
 }
