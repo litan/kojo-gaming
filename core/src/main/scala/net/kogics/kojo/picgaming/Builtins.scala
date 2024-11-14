@@ -159,8 +159,6 @@ object Builtins {
 //    Gdx.input.isKeyPressed(key)
 //  }
 
-  def cleari(): Unit = {}
-
   val ColorMaker = doodle.Color
   val cm = doodle.Color
   implicit def rc2c(rc: doodle.Color): Color = rc.toAwt
@@ -184,4 +182,10 @@ object Builtins {
 
   type Point = core.Point
   val Point = core.Point
+
+  def disablePanAndZoom(): Unit = {}
+  def showAxes(): Unit = {}
+  def cleari(): Unit = {}
+  def clear(): Unit = {}
+  def clearOutput(): Unit = {}
 }
