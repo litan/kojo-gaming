@@ -119,7 +119,10 @@ trait Picture {
   }
 
   def collidesWith(other: Picture): Boolean = {
-    if (other == Builtins.stageBorder)
+    if (other == this) {
+      false
+    }
+    else if (other == Builtins.stageBorder)
       collidesWithStage()
     else {
       val poly1 = boundaryPolygon
