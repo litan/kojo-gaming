@@ -59,10 +59,6 @@ object KojoUtils {
     setRandomSeed(seed)
   }
 
-  def isKeyPressed(key: Int): Boolean = {
-    Gdx.input.isKeyPressed(key)
-  }
-
   def repeat(n: Int)(fn: => Unit): Unit = {
     var i = 0
     while (i < n) {

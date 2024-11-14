@@ -223,4 +223,21 @@ abstract class PicGdxScreen extends Screen with InputProcessor {
   def frameDeltaTime: Double = Gdx.graphics.getDeltaTime()
   def pause(seconds: Double) = pauseMillis((seconds * 1000).toLong)
   def pauseMillis(milliSeconds: Long) = Thread.sleep(milliSeconds)
+
+  def isKeyPressed(key: Int): Boolean = {
+    Gdx.input.isKeyPressed(key)
+  }
+
+  private val mPos = new com.badlogic.gdx.math.Vector3()
+  def mouseX = mousePosition.x
+  def mouseY = mousePosition.y
+  def mousePosition = {
+    mPos.set(Gdx.input.getX.toFloat, Gdx.input.getY.toFloat, 0)
+    camera.unproject(mPos)
+    Point(mPos.x, mPos.y)
+  }
+  def isMousePressed: Boolean = Gdx.input.isTouched
+  def isMousePressed(button: Int) = Gdx.input.isButtonPressed(button)
+//  def mouseButton: Int = staging.Inputs.mouseBtn
+
 }
