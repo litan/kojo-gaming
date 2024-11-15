@@ -181,12 +181,12 @@ trait VectorPicture extends Picture {
 
   private[picgaming] def realDrawOutlined(shapeRenderer: ShapeRenderer): Unit = {
     if (!showing) return
-    if (opacity < 1) {
+    if (opacity < 1 || penColor.a < 1) {
       if (!Gdx.gl.glIsEnabled(GL20.GL_BLEND)) {
         Gdx.gl.glEnable(GL20.GL_BLEND)
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
       }
-      shapeRenderer.setColor(penColor.r, penColor.g, penColor.b, opacity.toFloat)
+      shapeRenderer.setColor(penColor.r, penColor.g, penColor.b, penColor.a * opacity.toFloat)
     }
     else {
       shapeRenderer.setColor(penColor)
@@ -198,12 +198,12 @@ trait VectorPicture extends Picture {
 
   private[picgaming] def realDrawFilled(shapeRenderer: ShapeRenderer): Unit = {
     if (!showing) return
-    if (opacity < 1) {
+    if (opacity < 1 || fillColor.a < 1) {
       if (!Gdx.gl.glIsEnabled(GL20.GL_BLEND)) {
         Gdx.gl.glEnable(GL20.GL_BLEND)
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
       }
-      shapeRenderer.setColor(fillColor.r, fillColor.g, fillColor.b, opacity.toFloat)
+      shapeRenderer.setColor(fillColor.r, fillColor.g, fillColor.b, fillColor.a * opacity.toFloat)
     }
     else {
       shapeRenderer.setColor(fillColor)
