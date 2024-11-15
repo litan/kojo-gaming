@@ -112,10 +112,20 @@ trait Picture {
     rotation += a
   }
 
+  def setRotation(a: Double): Unit = {
+    rotation = a
+  }
+
   def scale(factor: Double): Unit = {
     val sf = if (factor == 0) Double.MinPositiveValue else factor
     scaleX *= sf
     scaleY *= sf
+  }
+
+  def setScale(factor: Double): Unit = {
+    val sf = if (factor == 0) Double.MinPositiveValue else factor
+    scaleX = sf
+    scaleY = sf
   }
 
   def collidesWith(other: Picture): Boolean = {
