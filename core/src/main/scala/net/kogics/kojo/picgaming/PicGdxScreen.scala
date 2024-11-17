@@ -2,12 +2,15 @@ package net.kogics.kojo.picgaming
 
 import java.awt.Color
 
+import com.badlogic.gdx.audio.Music
+import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.{ Color => GdxColor }
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.utils.TimeUtils
 import com.badlogic.gdx.utils.Timer
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
@@ -240,4 +243,46 @@ abstract class PicGdxScreen extends Screen with InputProcessor {
   def isMousePressed(button: Int) = Gdx.input.isButtonPressed(button)
 //  def mouseButton: Int = staging.Inputs.mouseBtn
 
+  var musicLoop: Option[Music] = None
+  var sound: Option[Sound] = None
+  var playTime = -1L
+
+  def playMp3Loop(mp3File: String): Unit = {
+    if (musicLoop.isEmpty) {
+      val music = Gdx.audio.newMusic(Gdx.files.internal(mp3File))
+      music.setLooping(true)
+      musicLoop = Some(music)
+      music.play()
+    }
+  }
+
+  def stopMp3Loop(): Unit = {
+    musicLoop.foreach { m =>
+      m.stop()
+      m.dispose()
+    }
+    musicLoop = None
+  }
+
+  def playMp3(mp3File: String): Unit = {
+    if (sound.isEmpty) {
+      val s = Gdx.audio.newSound(Gdx.files.internal(mp3File))
+      sound = Some(s)
+      playTime = TimeUtils.millis()
+      s.play()
+    }
+  }
+
+  def stopMp3(): Unit = {
+    sound.foreach { s =>
+      s.stop()
+      s.dispose()
+    }
+    sound = None
+    playTime = -1L
+  }
+
+  def isMp3Playing(): Boolean = {
+    sound.isDefined && TimeUtils.millis - playTime < 500
+  }
 }
