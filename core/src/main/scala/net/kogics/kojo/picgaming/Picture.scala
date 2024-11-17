@@ -18,6 +18,10 @@ import com.badlogic.gdx.math.Polygon
 import com.badlogic.gdx.utils.FloatArray
 import com.badlogic.gdx.utils.TimeUtils
 import com.badlogic.gdx.Gdx
+import com.vividsolutions.jts.geom.Coordinate
+import com.vividsolutions.jts.geom.Geometry
+import com.vividsolutions.jts.geom.GeometryFactory
+import com.vividsolutions.jts.geom.PrecisionModel
 import net.kogics.kojo.core.Point
 import net.kogics.kojo.gaming.TextureUtils
 import net.kogics.kojo.gaming.Utils
@@ -26,6 +30,13 @@ import net.kogics.kojo.util.Vector2D
 object Picture {
   var stage: PicGdxStage = _
   private var workColor = new Color()
+  lazy val Gf = new GeometryFactory
+  lazy val pmodel = new PrecisionModel(14)
+  def newCoordinate(x: Double, y: Double) = {
+    val coord = new Coordinate(x, y)
+    pmodel.makePrecise(coord)
+    coord
+  }
 
   def rectangle(w: Double, h: Double): VectorPicture = new RectPicture(w, h)
   def ellipse(rx: Double, ry: Double): VectorPicture = new EllipsePicture(rx, ry)
@@ -155,26 +166,24 @@ trait Picture {
     opacity = o
   }
 
-  protected def closenessScaleFactor(bp: Polygon, distance: Double): (Float, Float) = {
-    val bounds = bp.getBoundingRectangle
-    val w = bounds.width
-    val h = bounds.height
-    val scaleX = (w + distance.toFloat) / w
-    val scaleY = (h + distance.toFloat) / h
-    (scaleX, scaleY)
+  def picGeom = {
+    def verticesToGeom(vertices: Array[Float]): Geometry = {
+      val cab = new ArrayBuffer[Coordinate]
+      vertices.grouped(2).foreach { pts =>
+        cab.append(Picture.newCoordinate(pts(0), pts(1)))
+      }
+      cab.append(cab(0))
+      Picture.Gf.createLineString(cab.toArray)
+    }
+    verticesToGeom(boundaryPolygon.getTransformedVertices)
+  }
+
+  def distanceTo(other: Picture): Double = {
+    picGeom.distance(other.picGeom)
   }
 
   def isCloser(other: Picture, distance: Double): Boolean = {
-    val poly1 = boundaryPolygon
-    val (scaleX, scaleY) = closenessScaleFactor(poly1, distance)
-    poly1.setScale(poly1.getScaleX * scaleX, poly1.getScaleY * scaleY)
-    val poly2 = other.boundaryPolygon
-    if (poly1.getBoundingRectangle.overlaps(poly2.getBoundingRectangle)) {
-      Intersector.overlapConvexPolygons(poly1, poly2)
-    }
-    else {
-      false
-    }
+    distanceTo(other) < distance
   }
 }
 
@@ -295,15 +304,6 @@ class EllipsePicture(rx: Double, ry: Double) extends VectorPicture {
     )
     shapeRenderer.setTransformMatrix(savedTransform)
   }
-
-  protected override def closenessScaleFactor(bp: Polygon, distance: Double): (Float, Float) = {
-    val bounds = bp.getBoundingRectangle
-    val w = bounds.width
-    val h = bounds.height
-    val scaleX = (w + 2 * distance.toFloat) / w
-    val scaleY = (h + 2 * distance.toFloat) / h
-    (scaleX, scaleY)
-  }
 }
 
 object TextPicture {
@@ -408,7 +408,6 @@ class StubRasterPicture(w: Double, h: Double) extends RasterPicture {
     // do nothing
   }
 }
-
 
 class BatchPics(pics: collection.Seq[RasterPicture]) extends RasterPicture {
   private var currPicIndex = 0
