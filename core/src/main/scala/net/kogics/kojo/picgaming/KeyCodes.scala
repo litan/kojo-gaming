@@ -12,4 +12,6 @@ class KeyCodes {
   val VK_S = Keys.S
   val VK_D = Keys.D
   val VK_A = Keys.A
+  val VK_Z = Keys.Z
+  val VK_X = Keys.X
 }
