@@ -177,7 +177,9 @@ object Builtins {
   def epochTimeMillis = System.currentTimeMillis()
   def epochTime = System.currentTimeMillis() / 1000.0
 
-  def draw(pictures: Picture*) = pictures.foreach { p => p.draw() }
+  def draw(pictures: Picture*): Unit = draw(pictures)
+  def draw(pictures: collection.Seq[Picture]): Unit = pictures.foreach { p => p.draw() }
+
   def drawAndHide(pictures: Picture*) = pictures.foreach { p => p.drawAndHide() }
 
   type Point = core.Point
