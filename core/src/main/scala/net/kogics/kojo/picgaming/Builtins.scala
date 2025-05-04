@@ -12,7 +12,12 @@ import net.kogics.kojo.staging
 import net.kogics.kojo.util.Utils
 import net.kogics.kojo.util.Vector2D
 
+class KojoCtx {
+  def baseDir = "./"
+}
+
 object Builtins {
+  val kojoCtx = new KojoCtx
   var screen: PicGdxScreen = _
   val blue = Color.blue
   val red = Color.red
@@ -190,4 +195,14 @@ object Builtins {
   def cleari(): Unit = {}
   def clear(): Unit = {}
   def clearOutput(): Unit = {}
+
+  def resolvedPath(fname0: String): String = {
+    def expandHomeDir(fname: String): String =
+      if (fname.startsWith("~")) fname.replaceFirst("~", Utils.homeDir.replace("\\", "/")) else fname
+
+    val fname = expandHomeDir(fname0)
+    val f = new java.io.File(fname)
+    val path = if (f.isAbsolute) f.getAbsolutePath else kojoCtx.baseDir + fname
+    path.replace("\\", "/")
+  }
 }
