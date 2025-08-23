@@ -74,35 +74,36 @@ abstract class PicGdxScreen extends Screen with InputProcessor {
   }
 
   override def render(dt: Float): Unit = {
+    camera.update()
+    shapeRenderer.setProjectionMatrix(camera.combined)
+    spriteBatch.setProjectionMatrix(camera.combined)
+
     if (!paused) {
-      camera.update()
-      shapeRenderer.setProjectionMatrix(camera.combined)
-      spriteBatch.setProjectionMatrix(camera.combined)
-
       update(dt)
-
-      Gdx.gl.glClearColor(bgColor.r, bgColor.g, bgColor.b, bgColor.a)
-      Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
-
-      // draw the pic scene graph
-      shapeRenderer.begin(ShapeType.Filled)
-      for (p <- stage.filledPictures) {
-        p.realDrawFilled(shapeRenderer)
-      }
-      shapeRenderer.end()
-
-      shapeRenderer.begin(ShapeType.Line)
-      for (p <- stage.outlinedPictures) {
-        p.realDrawOutlined(shapeRenderer)
-      }
-      shapeRenderer.end()
-
-      spriteBatch.begin()
-      for (p <- stage.imagePictures) {
-        p.realDraw(spriteBatch)
-      }
-      spriteBatch.end()
     }
+
+    Gdx.gl.glClearColor(bgColor.r, bgColor.g, bgColor.b, bgColor.a)
+    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+
+    // draw the pic scene graph
+    shapeRenderer.begin(ShapeType.Filled)
+    for (p <- stage.filledPictures) {
+      p.realDrawFilled(shapeRenderer)
+    }
+
+    shapeRenderer.end()
+
+    shapeRenderer.begin(ShapeType.Line)
+    for (p <- stage.outlinedPictures) {
+      p.realDrawOutlined(shapeRenderer)
+    }
+    shapeRenderer.end()
+
+    spriteBatch.begin()
+    for (p <- stage.imagePictures) {
+      p.realDraw(spriteBatch)
+    }
+    spriteBatch.end()
   }
 
   // methods required by Screen interface
