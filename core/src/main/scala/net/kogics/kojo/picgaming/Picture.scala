@@ -193,6 +193,9 @@ trait Picture {
   def collision(others: Seq[Picture]): Option[Picture] = {
     others.find { o => this.collidesWith(o) }
   }
+
+  def showNext(gap: Long): Unit = {}
+  def showNext(): Unit = showNext(100)
 }
 
 trait RasterPicture extends Picture {
@@ -433,7 +436,7 @@ class BatchPics(pics: collection.Seq[RasterPicture]) extends RasterPicture {
     batch.setTransformMatrix(savedTransform)
   }
 
-  def showNext(gap: Long): Unit = {
+  override def showNext(gap: Long): Unit = {
     val currTime = TimeUtils.millis()
     if (currTime - lastIndexChange > gap) {
       currPicIndex += 1
@@ -443,8 +446,6 @@ class BatchPics(pics: collection.Seq[RasterPicture]) extends RasterPicture {
       lastIndexChange = currTime
     }
   }
-
-  def showNext(): Unit = showNext(100)
 
   def bPoly: Polygon = new Polygon(pics(currPicIndex).boundaryPolygon.getTransformedVertices)
 }
